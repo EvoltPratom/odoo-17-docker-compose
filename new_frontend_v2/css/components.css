@@ -588,3 +588,175 @@
         margin: var(--spacing-md);
     }
 }
+
+/* ==================== HIERARCHICAL COMPONENTS ==================== */
+
+/* Hierarchical Location Selector */
+.hierarchical-location-selector {
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    background: var(--bg-primary);
+}
+
+.location-tree-container {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.location-node {
+    border-bottom: 1px solid var(--bg-secondary);
+}
+
+.location-item {
+    display: flex;
+    align-items: center;
+    padding: var(--spacing-sm) var(--spacing-md);
+    cursor: pointer;
+    transition: background-color var(--transition-fast);
+}
+
+.location-item:hover {
+    background-color: var(--bg-secondary);
+}
+
+.location-item.selected {
+    background-color: var(--primary-light);
+    border-left: 3px solid var(--primary-color);
+}
+
+.location-toggle {
+    width: 20px;
+    cursor: pointer;
+    color: var(--text-secondary);
+}
+
+.location-spacer {
+    width: 20px;
+}
+
+.location-icon {
+    width: 24px;
+    text-align: center;
+    margin-right: var(--spacing-sm);
+    color: var(--text-primary);
+}
+
+.location-label {
+    flex: 1;
+    font-weight: 500;
+}
+
+.location-info {
+    margin-left: auto;
+}
+
+.location-children {
+    border-left: 2px solid var(--border-color);
+    margin-left: 10px;
+}
+
+/* Hierarchical Attendance Display */
+.hierarchical-attendance-display {
+    background: var(--bg-primary);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-sm);
+}
+
+.attendance-header {
+    padding: var(--spacing-lg);
+    border-bottom: 1px solid var(--border-color);
+    background-color: var(--bg-secondary);
+    border-radius: var(--border-radius) var(--border-radius) 0 0;
+}
+
+.attendance-content {
+    padding: var(--spacing-lg);
+}
+
+.person-attendance-card {
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-sm);
+    margin-bottom: var(--spacing-lg);
+}
+
+.person-attendance-card .card-header {
+    background-color: var(--bg-secondary);
+    border-bottom: 1px solid var(--border-color);
+    padding: var(--spacing-md) var(--spacing-lg);
+}
+
+.manual-locations {
+    border-left: 3px solid var(--primary-color);
+    padding-left: var(--spacing-lg);
+    margin-bottom: var(--spacing-md);
+}
+
+.auto-locations {
+    border-left: 3px solid var(--text-secondary);
+    padding-left: var(--spacing-lg);
+}
+
+.location-item {
+    background-color: var(--bg-secondary);
+    transition: background-color var(--transition-fast);
+    border-radius: var(--border-radius-sm);
+}
+
+.location-item:hover {
+    background-color: var(--bg-tertiary);
+}
+
+/* Attendance Stats */
+.attendance-stats .badge {
+    font-size: var(--font-size-sm);
+    padding: var(--spacing-sm) var(--spacing-md);
+}
+
+/* Auto-refresh indicator */
+.auto-refresh-indicator {
+    position: absolute;
+    top: var(--spacing-md);
+    right: var(--spacing-md);
+    width: 8px;
+    height: 8px;
+    background-color: var(--success-color);
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+}
+
+/* Hierarchy level indicators */
+.level-0 { border-left-color: var(--danger-color); }
+.level-1 { border-left-color: var(--warning-color); }
+.level-2 { border-left-color: var(--info-color); }
+.level-3 { border-left-color: var(--success-color); }
+.level-4 { border-left-color: var(--primary-color); }
+
+/* Mobile responsive for hierarchical components */
+@media (max-width: 768px) {
+    .location-tree-container {
+        max-height: 300px;
+    }
+
+    .attendance-controls {
+        flex-direction: column;
+        gap: var(--spacing-sm);
+    }
+
+    .attendance-controls .btn {
+        width: 100%;
+    }
+
+    .location-item {
+        padding: var(--spacing-sm);
+    }
+
+    .person-attendance-card .card-header {
+        padding: var(--spacing-sm) var(--spacing-md);
+    }
+}

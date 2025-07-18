@@ -42,7 +42,20 @@ class ExtendedAttendanceRecord(models.Model):
         string='Device',
         help='Device used for attendance recording'
     )
-    
+
+    # Action tracking
+    auto_action = fields.Selection([
+        ('manual', 'Manual'),
+        ('auto_checkin', 'Auto Check-in'),
+        ('auto_checkout', 'Auto Check-out'),
+    ], string='Action Type', default='manual', required=True,
+       help='Whether this action was manual or automatic')
+
+    notes = fields.Text(
+        string='Notes',
+        help='Additional notes about this attendance record'
+    )
+
     # Computed fields
     display_name = fields.Char(
         string='Display Name',
@@ -185,19 +198,21 @@ class ExtendedAttendanceRecord(models.Model):
             if record.check_out and record.check_in and record.check_out <= record.check_in:
                 raise ValidationError(_('Check-out time must be after check-in time.'))
 
-    @api.constrains('person_id', 'check_in')
+    @api.constrains('person_id', 'check_in', 'location_id')
     def _check_overlapping_attendance(self):
-        """Prevent overlapping attendance records for the same person"""
+        """Prevent duplicate attendance records at the same location"""
         for record in self:
             if not record.check_out:  # Only check for open records
+                # Only prevent overlapping at the SAME location (not different locations)
                 overlapping = self.search([
                     ('person_id', '=', record.person_id.id),
+                    ('location_id', '=', record.location_id.id),  # Same location only
                     ('id', '!=', record.id),
                     ('check_out', '=', False)
                 ])
                 if overlapping:
-                    raise ValidationError(_('Person %s is already checked in at %s. Please check out first.') % 
-                                        (record.person_id.name, overlapping.location_id.name))
+                    raise ValidationError(_('Person %s is already checked in at %s.') %
+                                        (record.person_id.name, record.location_id.name))
 
     def action_check_out(self, check_out_time=None):
         """Check out the person"""

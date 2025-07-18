@@ -7,6 +7,7 @@ class DashboardComponent {
     constructor() {
         this.refreshInterval = null;
         this.isInitialized = false;
+        this.hierarchicalAttendanceDisplay = null;
     }
 
     /**
@@ -135,45 +136,30 @@ class DashboardComponent {
         const state = appState.getState();
         const currentAttendance = state.currentAttendance;
         const container = document.getElementById('currentAttendanceList');
-        
+
         if (!container) return;
-        
-        if (currentAttendance.length === 0) {
-            container.innerHTML = `
-                <div class="text-center text-muted py-4">
-                    <i class="fas fa-users fa-3x mb-3"></i>
-                    <p>No one is currently checked in</p>
-                    <button class="btn btn-primary" data-quick-action="check-in">
-                        <i class="fas fa-sign-in-alt"></i> Check Someone In
-                    </button>
-                </div>
-            `;
-            return;
+
+        // Initialize hierarchical attendance display if not already done
+        if (!this.hierarchicalAttendanceDisplay) {
+            // Create a container for the hierarchical display
+            container.innerHTML = '<div id="hierarchicalAttendanceContainer"></div>';
+
+            this.hierarchicalAttendanceDisplay = new HierarchicalAttendanceDisplay(
+                'hierarchicalAttendanceContainer',
+                {
+                    showAutoActions: true,
+                    showTimestamps: true,
+                    showLocationPaths: true,
+                    groupByPerson: true,
+                    refreshInterval: 0 // We'll handle refresh manually
+                }
+            );
         }
-        
-        // Group by location
-        const byLocation = Utils.groupBy(currentAttendance, 'location_name');
-        
-        let html = '';
-        Object.keys(byLocation).forEach(locationName => {
-            const people = byLocation[locationName];
-            html += `
-                <div class="location-group mb-4">
-                    <div class="d-flex align-items-center justify-content-between mb-2">
-                        <h5 class="mb-0">
-                            <i class="fas fa-map-marker-alt text-primary"></i>
-                            ${Utils.sanitizeHtml(locationName)}
-                        </h5>
-                        <span class="badge badge-info">${people.length} person${people.length !== 1 ? 's' : ''}</span>
-                    </div>
-                    <div class="row">
-                        ${people.map(person => this.createPersonCard(person)).join('')}
-                    </div>
-                </div>
-            `;
-        });
-        
-        container.innerHTML = html;
+
+        // Update the hierarchical display with current data
+        this.hierarchicalAttendanceDisplay.attendanceData = currentAttendance;
+        this.hierarchicalAttendanceDisplay.groupedData = window.app.api.groupAttendanceByPerson(currentAttendance);
+        this.hierarchicalAttendanceDisplay.render();
     }
 
     /**
@@ -250,51 +236,85 @@ class DashboardComponent {
         const state = appState.getState();
         const persons = state.persons;
         const locations = state.locations;
-        
+
         if (persons.length === 0) {
             Utils.showToast('No persons available. Please add persons first.', 'warning');
             return;
         }
-        
+
         if (locations.length === 0) {
             Utils.showToast('No locations available. Please add locations first.', 'warning');
             return;
         }
-        
-        const personOptions = persons.map(p => ({
-            value: p.person_id,
-            label: `${p.name} (${p.person_id})`
-        }));
-        
-        const locationOptions = locations.map(l => ({
-            value: l.code,
-            label: `${l.name} (${l.code})`
-        }));
-        
-        const formData = await modalManager.showForm({
+
+        // Show custom modal with hierarchical location selector
+        const modal = modalManager.showModal({
             title: 'Quick Check-In',
-            fields: [
+            content: `
+                <div class="check-in-form">
+                    <div class="form-group mb-3">
+                        <label for="personSelect" class="form-label">Select Person</label>
+                        <select id="personSelect" class="form-select" required>
+                            <option value="">Choose a person...</option>
+                            ${persons.map(p => `
+                                <option value="${p.person_id}">${p.name} (${p.person_id})</option>
+                            `).join('')}
+                        </select>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label class="form-label">Select Location</label>
+                        <div id="hierarchicalLocationSelector" style="max-height: 300px; overflow-y: auto;"></div>
+                    </div>
+                </div>
+            `,
+            buttons: [
                 {
-                    name: 'person_identifier',
-                    label: 'Person',
-                    type: 'select',
-                    options: personOptions,
-                    required: true
+                    text: 'Cancel',
+                    variant: 'secondary',
+                    action: () => modalManager.hideModal()
                 },
                 {
-                    name: 'location_code',
-                    label: 'Location',
-                    type: 'select',
-                    options: locationOptions,
-                    required: true
+                    text: 'Check In',
+                    variant: 'primary',
+                    action: async () => {
+                        const personId = document.getElementById('personSelect').value;
+                        const locationSelector = this.hierarchicalLocationSelector;
+                        const selectedLocations = locationSelector ? locationSelector.getSelectedLocationData() : [];
+
+                        if (!personId) {
+                            Utils.showToast('Please select a person', 'warning');
+                            return;
+                        }
+
+                        if (selectedLocations.length === 0) {
+                            Utils.showToast('Please select a location', 'warning');
+                            return;
+                        }
+
+                        modalManager.hideModal();
+                        await this.performCheckIn(personId, selectedLocations[0].code);
+                    }
                 }
-            ],
-            submitText: 'Check In'
+            ]
         });
-        
-        if (formData) {
-            await this.performCheckIn(formData.person_identifier, formData.location_code);
-        }
+
+        // Initialize hierarchical location selector
+        setTimeout(() => {
+            this.hierarchicalLocationSelector = new HierarchicalLocationSelector(
+                'hierarchicalLocationSelector',
+                {
+                    allowMultiple: false,
+                    showPath: true,
+                    showCodes: true,
+                    onSelectionChange: (selectedLocations) => {
+                        // Update UI to show selection
+                        console.log('Selected locations:', selectedLocations);
+                    }
+                }
+            );
+            this.hierarchicalLocationSelector.init(locations);
+        }, 100);
     }
 
     /**

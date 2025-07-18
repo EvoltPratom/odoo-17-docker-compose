@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Extended Attendance API Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; }
+        .data { background: #f5f5f5; padding: 10px; margin: 10px 0; }
+        button { padding: 10px 20px; margin: 5px; }
+        .success { color: green; }
+        .error { color: red; }
+    </style>
+</head>
+<body>
+    <h1>Extended Attendance API Test</h1>
+    
+    <div class="section">
+        <h2>API Connection Test</h2>
+        <button onclick="testConnect()">Test Connect</button>
+        <div id="connectResult" class="data"></div>
+    </div>
+    
+    <div class="section">
+        <h2>Person Types</h2>
+        <button onclick="loadPersonTypes()">Load Person Types</button>
+        <div id="personTypes" class="data"></div>
+    </div>
+    
+    <div class="section">
+        <h2>Locations</h2>
+        <button onclick="loadLocations()">Load Locations</button>
+        <div id="locations" class="data"></div>
+    </div>
+    
+    <div class="section">
+        <h2>Persons</h2>
+        <button onclick="loadPersons()">Load Persons</button>
+        <div id="persons" class="data"></div>
+    </div>
+
+    <script>
+        async function testConnect() {
+            const result = document.getElementById('connectResult');
+            try {
+                const response = await fetch('/api/connect', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        url: 'http://localhost:10017',
+                        db: 'extended_attendance',
+                        username: 'admin@demo.com',
+                        password: 'admin'
+                    })
+                });
+                
+                const data = await response.json();
+                result.innerHTML = `<span class="success">✅ Connected!</span><br><pre>${JSON.stringify(data, null, 2)}</pre>`;
+            } catch (error) {
+                result.innerHTML = `<span class="error">❌ Error: ${error.message}</span>`;
+            }
+        }
+
+        async function loadPersonTypes() {
+            const result = document.getElementById('personTypes');
+            try {
+                const response = await fetch('/api/attendance/person-types');
+                const data = await response.json();
+                
+                if (data.success) {
+                    let html = `<span class="success">✅ Found ${data.count} person types:</span><br>`;
+                    data.data.forEach(type => {
+                        html += `<div style="margin: 5px 0; padding: 5px; background: white;">
+                            <strong>${type.name}</strong> (${type.code}) - ${type.person_count} persons
+                        </div>`;
+                    });
+                    result.innerHTML = html;
+                } else {
+                    result.innerHTML = `<span class="error">❌ Error: ${data.error}</span>`;
+                }
+            } catch (error) {
+                result.innerHTML = `<span class="error">❌ Error: ${error.message}</span>`;
+            }
+        }
+
+        async function loadLocations() {
+            const result = document.getElementById('locations');
+            try {
+                const response = await fetch('/api/attendance/locations');
+                const data = await response.json();
+                
+                if (data.success) {
+                    let html = `<span class="success">✅ Found ${data.count} locations:</span><br>`;
+                    data.data.forEach(location => {
+                        html += `<div style="margin: 5px 0; padding: 5px; background: white;">
+                            <strong>${location.name}</strong> (${location.code}) - Capacity: ${location.capacity}
+                        </div>`;
+                    });
+                    result.innerHTML = html;
+                } else {
+                    result.innerHTML = `<span class="error">❌ Error: ${data.error}</span>`;
+                }
+            } catch (error) {
+                result.innerHTML = `<span class="error">❌ Error: ${error.message}</span>`;
+            }
+        }
+
+        async function loadPersons() {
+            const result = document.getElementById('persons');
+            try {
+                const response = await fetch('/api/attendance/persons');
+                const data = await response.json();
+                
+                if (data.success) {
+                    let html = `<span class="success">✅ Found ${data.count} persons:</span><br>`;
+                    data.data.forEach(person => {
+                        const status = person.is_checked_in ? 
+                            `🟢 Checked in at ${person.current_location?.name || 'Unknown'}` : 
+                            '🔴 Checked out';
+                        html += `<div style="margin: 5px 0; padding: 5px; background: white;">
+                            <strong>${person.name}</strong> (${person.person_id}) - ${person.person_type.name}<br>
+                            Status: ${status}<br>
+                            Email: ${person.email || 'N/A'} | Phone: ${person.phone || 'N/A'}
+                        </div>`;
+                    });
+                    result.innerHTML = html;
+                } else {
+                    result.innerHTML = `<span class="error">❌ Error: ${data.error}</span>`;
+                }
+            } catch (error) {
+                result.innerHTML = `<span class="error">❌ Error: ${error.message}</span>`;
+            }
+        }
+
+        // Auto-load data on page load
+        window.onload = function() {
+            testConnect();
+            setTimeout(() => {
+                loadPersonTypes();
+                loadLocations();
+                loadPersons();
+            }, 1000);
+        };
+    </script>
+</body>
+</html>

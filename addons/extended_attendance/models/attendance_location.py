@@ -36,7 +36,35 @@ class AttendanceLocation(models.Model):
         default=True,
         help='If unchecked, this location will be hidden'
     )
-    
+
+    # Hierarchy fields
+    parent_location_id = fields.Many2one(
+        'attendance.location',
+        string='Parent Location',
+        help='Parent location in the hierarchy (e.g., Main Building for Library)'
+    )
+
+    child_location_ids = fields.One2many(
+        'attendance.location',
+        'parent_location_id',
+        string='Sub-locations',
+        help='Child locations under this location'
+    )
+
+    location_path = fields.Char(
+        string='Location Path',
+        compute='_compute_location_path',
+        store=True,
+        help='Full path from root to this location (e.g., Main Building / Academic Wing / Library)'
+    )
+
+    level = fields.Integer(
+        string='Hierarchy Level',
+        compute='_compute_hierarchy_level',
+        store=True,
+        help='Level in the hierarchy (0 = root, 1 = first level, etc.)'
+    )
+
     color = fields.Integer(
         string='Color',
         default=0,
@@ -179,6 +207,19 @@ class AttendanceLocation(models.Model):
                 # Model not loaded yet during installation
                 record.current_occupancy = 0
 
+    @api.depends('parent_location_id')
+    def _compute_hierarchy_level(self):
+        """Compute the hierarchy level of this location"""
+        for record in self:
+            level = 0
+            current = record
+            while current.parent_location_id:
+                level += 1
+                current = current.parent_location_id
+                if level > 10:  # Prevent infinite loops
+                    break
+            record.level = level
+
     @api.constrains('code')
     def _check_code_unique(self):
         """Ensure location codes are unique"""
@@ -189,7 +230,7 @@ class AttendanceLocation(models.Model):
     @api.constrains('parent_location_id')
     def _check_parent_recursion(self):
         """Prevent recursive parent relationships"""
-        if not self._check_recursion():
+        if not self._check_recursion(parent='parent_location_id'):
             raise ValidationError(_('You cannot create recursive location hierarchies.'))
 
     @api.constrains('capacity', 'current_occupancy')
@@ -291,6 +332,51 @@ class AttendanceLocation(models.Model):
             existing = self.search([('code', '=', location_data['code'])])
             if not existing:
                 self.create(location_data)
+
+    def get_all_parent_locations(self):
+        """Get all parent locations up to the root"""
+        self.ensure_one()
+        parents = []
+        current = self.parent_location_id
+        while current:
+            parents.append(current)
+            current = current.parent_location_id
+            if len(parents) > 10:  # Prevent infinite loops
+                break
+        return parents
+
+    def get_all_child_locations(self):
+        """Get all child locations recursively"""
+        self.ensure_one()
+        children = []
+
+        def collect_children(location):
+            for child in location.child_location_ids:
+                children.append(child)
+                collect_children(child)
+
+        collect_children(self)
+        return children
+
+    def get_root_location(self):
+        """Get the root location of this hierarchy"""
+        self.ensure_one()
+        current = self
+        while current.parent_location_id:
+            current = current.parent_location_id
+        return current
+
+    def is_child_of(self, parent_location):
+        """Check if this location is a child of the given parent location"""
+        self.ensure_one()
+        parents = self.get_all_parent_locations()
+        return parent_location in parents
+
+    def is_parent_of(self, child_location):
+        """Check if this location is a parent of the given child location"""
+        self.ensure_one()
+        children = self.get_all_child_locations()
+        return child_location in children
 
 
 class LocationOperatingHours(models.Model):

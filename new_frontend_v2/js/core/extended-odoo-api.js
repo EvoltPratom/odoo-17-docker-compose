@@ -42,6 +42,7 @@ class ExtendedOdooAPI {
                         this.sessionId = result.session_id;
                         this.isConnected = true;
                         this.useMockData = false;
+                        this.url = null; // Use relative paths for proxy server
                         console.log('Connected to real Odoo successfully, UID:', this.uid);
                         return { success: true, uid: this.uid };
                     }
@@ -72,27 +73,54 @@ class ExtendedOdooAPI {
         }
 
         try {
-            const url = `${this.url}${endpoint}`;
-            const requestData = {
-                jsonrpc: "2.0",
-                method: "call",
-                params: data || {},
-                id: Date.now()
-            };
+            // Check if we're using proxy server (null/empty URL means relative paths)
+            const isProxyMode = !this.url || this.url === '';
+            const url = isProxyMode ? endpoint : `${this.url}${endpoint}`;
 
-            const response = await fetch(url, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(requestData)
-            });
+            let response;
+            if (isProxyMode) {
+                // Use simple HTTP requests for proxy server
+                const requestOptions = {
+                    method: method,
+                    headers: { 'Content-Type': 'application/json' }
+                };
 
-            const result = await response.json();
-            
-            if (result.error) {
-                throw new Error(result.error.message || 'API call failed');
+                if (data && method !== 'GET') {
+                    requestOptions.body = JSON.stringify(data);
+                }
+
+                response = await fetch(url, requestOptions);
+            } else {
+                // Use JSON-RPC for direct Odoo connection
+                const requestData = {
+                    jsonrpc: "2.0",
+                    method: "call",
+                    params: data || {},
+                    id: Date.now()
+                };
+
+                response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(requestData)
+                });
             }
 
-            return result.result;
+            const result = await response.json();
+
+            if (isProxyMode) {
+                // Proxy server returns direct response
+                if (!result.success) {
+                    throw new Error(result.error || 'API call failed');
+                }
+                return result;
+            } else {
+                // JSON-RPC response format
+                if (result.error) {
+                    throw new Error(result.error.message || 'API call failed');
+                }
+                return result.result;
+            }
         } catch (error) {
             console.error(`API call failed for ${endpoint}:`, error);
             throw error;
@@ -120,7 +148,15 @@ class ExtendedOdooAPI {
     // ==================== LOCATIONS API ====================
 
     async getLocations() {
-        return await this.apiCall('/api/attendance/locations');
+        const result = await this.apiCall('/api/attendance/locations');
+        if (result && result.success) {
+            // Sort locations by hierarchy for better display
+            result.data.sort((a, b) => {
+                if (a.level !== b.level) return a.level - b.level;
+                return a.name.localeCompare(b.name);
+            });
+        }
+        return result;
     }
 
     async createLocation(data) {
@@ -177,7 +213,12 @@ class ExtendedOdooAPI {
 
     async getCurrentAttendance(locationCode = null) {
         const params = locationCode ? { location_code: locationCode } : {};
-        return await this.apiCall('/api/attendance/current', 'GET', params);
+        const result = await this.apiCall('/api/attendance/current', 'GET', params);
+        if (result && result.success) {
+            // Group attendance by person for hierarchical display
+            result.groupedData = this.groupAttendanceByPerson(result.data);
+        }
+        return result;
     }
 
     async getAttendanceRecords(filters = {}) {
@@ -257,6 +298,67 @@ class ExtendedOdooAPI {
         }
 
         return mockData[endpoint] || { success: true, data: [] };
+    }
+
+    // ==================== HIERARCHY HELPER FUNCTIONS ====================
+
+    groupAttendanceByPerson(attendanceData) {
+        const grouped = {};
+
+        attendanceData.forEach(record => {
+            const personName = record.person_name;
+            if (!grouped[personName]) {
+                grouped[personName] = {
+                    person_name: personName,
+                    person_id: record.person_id,
+                    locations: []
+                };
+            }
+            grouped[personName].locations.push({
+                ...record,
+                is_manual: record.auto_action === 'manual',
+                is_auto: record.auto_action !== 'manual'
+            });
+        });
+
+        // Sort locations by hierarchy level for each person
+        Object.values(grouped).forEach(person => {
+            person.locations.sort((a, b) => {
+                // Sort by location hierarchy (manual locations typically at deepest level)
+                if (a.is_manual !== b.is_manual) {
+                    return a.is_manual ? 1 : -1; // Manual locations last
+                }
+                return a.location_name.localeCompare(b.location_name);
+            });
+        });
+
+        return grouped;
+    }
+
+    buildLocationHierarchy(locations) {
+        const locationMap = {};
+        const rootLocations = [];
+
+        // Create location map
+        locations.forEach(loc => {
+            locationMap[loc.id] = { ...loc, children: [] };
+        });
+
+        // Build hierarchy
+        locations.forEach(loc => {
+            if (loc.parent_location_id) {
+                const parent = locationMap[loc.parent_location_id];
+                if (parent) {
+                    parent.children.push(locationMap[loc.id]);
+                } else {
+                    rootLocations.push(locationMap[loc.id]);
+                }
+            } else {
+                rootLocations.push(locationMap[loc.id]);
+            }
+        });
+
+        return { locationMap, rootLocations };
     }
 }
 

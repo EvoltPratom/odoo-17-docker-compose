@@ -14,7 +14,7 @@ Scripts for installing and configuring the Extended Attendance module.
 - `setup_demo.py` - Demo data setup
 
 ### Legacy
-- `install_fastapi_modules.py` - FastAPI setup (deprecated)
+- ~~`install_fastapi_modules.py`~~ - Removed (FastAPI no longer used)
 
 ## Usage
 

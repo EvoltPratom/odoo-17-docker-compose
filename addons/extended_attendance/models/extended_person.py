@@ -1,5 +1,5 @@
 from odoo import models, fields, api, _
-from odoo.exceptions import ValidationError, UserError, UserError
+from odoo.exceptions import ValidationError, UserError
 import json
 
 
@@ -291,35 +291,166 @@ class ExtendedPerson(models.Model):
         
         return True, _('Access granted')
 
-    def create_attendance_record(self, location, check_in_time=None, device=None):
-        """Create an attendance record for this person"""
+    def create_attendance_record(self, location, check_in_time=None, device=None, auto_action='manual'):
+        """Create an attendance record for this person with hierarchical logic"""
         self.ensure_one()
-        
+
         # Check access permissions
         can_access, message = self.check_location_access(location)
         if not can_access:
             raise UserError(message)
-        
-        # Check if already checked in at another location
-        existing_checkin = self.env['extended.attendance.record'].search([
+
+        # Check if already checked in at this exact location
+        existing_at_location = self.env['extended.attendance.record'].search([
             ('person_id', '=', self.id),
+            ('location_id', '=', location.id),
             ('check_out', '=', False)
         ])
-        
-        if existing_checkin:
-            raise UserError(_('Person is already checked in at %s. Please check out first.') % existing_checkin.location_id.name)
-        
-        # Create attendance record
+
+        if existing_at_location:
+            raise UserError(_('Person is already checked in at %s.') % location.name)
+
+        # Hierarchical logic: Auto check-in to parent locations if needed
+        created_records = []
+
+        # Get all parent locations that need check-in
+        parent_locations = location.get_all_parent_locations()
+        parent_locations.reverse()  # Start from root
+
+        for parent in parent_locations:
+            # Check if already checked in to this parent
+            existing_parent = self.env['extended.attendance.record'].search([
+                ('person_id', '=', self.id),
+                ('location_id', '=', parent.id),
+                ('check_out', '=', False)
+            ])
+
+            if not existing_parent:
+                # Auto check-in to parent location
+                parent_data = {
+                    'person_id': self.id,
+                    'location_id': parent.id,
+                    'check_in': check_in_time or fields.Datetime.now(),
+                    'auto_action': 'auto_checkin',
+                    'notes': f'Auto checked-in when accessing {location.name}'
+                }
+                if device:
+                    parent_data['device_id'] = device.id
+
+                parent_record = self.env['extended.attendance.record'].create(parent_data)
+                created_records.append(parent_record.id)
+
+        # Create attendance record for the target location
         attendance_data = {
             'person_id': self.id,
             'location_id': location.id,
             'check_in': check_in_time or fields.Datetime.now(),
+            'auto_action': auto_action,
         }
-        
+
         if device:
             attendance_data['device_id'] = device.id
-        
-        return self.env['extended.attendance.record'].create(attendance_data)
+
+        record = self.env['extended.attendance.record'].create(attendance_data)
+        created_records.append(record.id)
+
+        return record.id
+
+    def create_attendance(self, location_id, action='check_in'):
+        """Create attendance record - API compatible method"""
+        self.ensure_one()
+
+        if action == 'check_in':
+            # Get location object for check-in
+            location = self.env['attendance.location'].browse(location_id)
+            if not location.exists():
+                raise UserError(_('Location not found'))
+            return self.create_attendance_record(location)
+        elif action == 'check_out':
+            # Handle hierarchical check out
+            return self.hierarchical_checkout()
+        else:
+            raise UserError(_('Invalid action. Use "check_in" or "check_out"'))
+
+    def transfer_location(self, new_location_id):
+        """Transfer person from current location to a new location"""
+        self.ensure_one()
+
+        # Check if person is currently checked in
+        current_attendance = self.env['extended.attendance.record'].search([
+            ('person_id', '=', self.id),
+            ('check_out', '=', False)
+        ], limit=1)
+
+        if not current_attendance:
+            raise UserError(_('Person %s is not currently checked in. Please check in first.') % self.name)
+
+        # Get new location
+        new_location = self.env['attendance.location'].browse(new_location_id)
+        if not new_location.exists():
+            raise UserError(_('New location not found'))
+
+        # Check if already at the same location
+        if current_attendance.location_id.id == new_location_id:
+            raise UserError(_('Person is already at %s.') % new_location.name)
+
+        # Close current attendance and create new one
+        current_attendance.write({'check_out': fields.Datetime.now()})
+        return self.create_attendance_record(new_location)
+
+    def hierarchical_checkout(self, location=None):
+        """Perform hierarchical checkout - if location specified, checkout from that location and all children"""
+        self.ensure_one()
+
+        if location:
+            # Check out from specific location and all its children
+            target_location = self.env['attendance.location'].browse(location) if isinstance(location, int) else location
+
+            # Get all child locations
+            child_locations = target_location.get_all_child_locations()
+            all_locations = [target_location] + child_locations
+
+            # Check out from all these locations
+            checkout_time = fields.Datetime.now()
+            checked_out_records = []
+
+            for loc in all_locations:
+                active_records = self.env['extended.attendance.record'].search([
+                    ('person_id', '=', self.id),
+                    ('location_id', '=', loc.id),
+                    ('check_out', '=', False)
+                ])
+
+                for record in active_records:
+                    record.write({
+                        'check_out': checkout_time,
+                        'auto_action': 'auto_checkout' if record.location_id != target_location else 'manual',
+                        'notes': f'Auto checked-out when leaving {target_location.name}' if record.location_id != target_location else record.notes
+                    })
+                    checked_out_records.append(record.id)
+
+            if checked_out_records:
+                return checked_out_records[0]  # Return the main record
+            else:
+                raise UserError(_('No active attendance record found for %s') % target_location.name)
+        else:
+            # Complete checkout - checkout from all locations
+            all_active = self.env['extended.attendance.record'].search([
+                ('person_id', '=', self.id),
+                ('check_out', '=', False)
+            ])
+
+            if not all_active:
+                raise UserError(_('No active attendance records found for check out'))
+
+            checkout_time = fields.Datetime.now()
+            for record in all_active:
+                record.write({
+                    'check_out': checkout_time,
+                    'auto_action': 'manual'
+                })
+
+            return all_active[0].id
 
     def action_check_in(self):
         """Action to check in the person"""
@@ -335,7 +466,7 @@ class ExtendedPerson(models.Model):
         if not default_location:
             raise UserError(_('No attendance location found. Please create at least one location.'))
 
-        return self.create_attendance(default_location.id, 'check_in')
+        return self.create_attendance_record(default_location)
 
     def action_check_out(self):
         """Action to check out the person"""

@@ -39,60 +39,8 @@ def update_and_install():
         except Exception as e:
             print(f"❌ Error updating module list: {e}")
         
-        # Check FastAPI module
-        print("🔍 Checking FastAPI module...")
-        fastapi_modules = models.execute_kw(
-            ODOO_DB, uid, ADMIN_PASSWORD,
-            'ir.module.module', 'search_read',
-            [[['name', '=', 'fastapi']]], {'fields': ['name', 'state', 'dependencies_id']}
-        )
-        
-        if fastapi_modules:
-            module = fastapi_modules[0]
-            print(f"   FastAPI module state: {module['state']}")
-            
-            # Get dependencies
-            if module['dependencies_id']:
-                deps = models.execute_kw(
-                    ODOO_DB, uid, ADMIN_PASSWORD,
-                    'ir.module.module.dependency', 'read',
-                    [module['dependencies_id']], {'fields': ['name']}
-                )
-                print(f"   Dependencies: {[dep['name'] for dep in deps]}")
-            else:
-                print("   No dependencies found")
-        else:
-            print("❌ FastAPI module not found")
-            
-        # Try to install FastAPI
-        print("📦 Attempting to install FastAPI...")
-        try:
-            fastapi_ids = models.execute_kw(
-                ODOO_DB, uid, ADMIN_PASSWORD,
-                'ir.module.module', 'search',
-                [[['name', '=', 'fastapi']]]
-            )
-            
-            if fastapi_ids:
-                models.execute_kw(
-                    ODOO_DB, uid, ADMIN_PASSWORD,
-                    'ir.module.module', 'button_immediate_install',
-                    [fastapi_ids]
-                )
-                print("✅ FastAPI installation initiated")
-                time.sleep(5)
-                
-                # Check status
-                updated_info = models.execute_kw(
-                    ODOO_DB, uid, ADMIN_PASSWORD,
-                    'ir.module.module', 'read',
-                    [fastapi_ids], {'fields': ['state']}
-                )[0]
-                print(f"   FastAPI state: {updated_info['state']}")
-                
-        except Exception as e:
-            print(f"❌ Error installing FastAPI: {e}")
-            
+        # FastAPI is no longer needed - focusing on simple HTTP controllers
+
         # Try to install extended_attendance
         print("📦 Attempting to install extended_attendance...")
         try:

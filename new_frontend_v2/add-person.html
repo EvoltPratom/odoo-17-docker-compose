@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add New Person - Extended Attendance</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 20px; 
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .form-group { 
+            margin: 20px 0; 
+        }
+        label { 
+            display: block; 
+            margin-bottom: 5px; 
+            font-weight: bold;
+            color: #333;
+        }
+        input, select { 
+            width: 100%; 
+            padding: 12px; 
+            border: 1px solid #ddd; 
+            border-radius: 4px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        input:focus, select:focus {
+            border-color: #007bff;
+            outline: none;
+            box-shadow: 0 0 5px rgba(0,123,255,0.3);
+        }
+        button { 
+            padding: 12px 24px; 
+            margin: 10px 5px; 
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .btn-primary {
+            background-color: #007bff;
+            color: white;
+        }
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+        }
+        .btn-secondary:hover {
+            background-color: #545b62;
+        }
+        .success { color: green; font-weight: bold; }
+        .error { color: red; font-weight: bold; }
+        .loading { color: #007bff; }
+        .person-types-info {
+            background: #e9ecef;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #007bff;
+            text-decoration: none;
+        }
+        .back-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="test.html" class="back-link">← Back to Test Page</a>
+        
+        <h1>Add New Person</h1>
+        
+        <div id="personTypesInfo" class="person-types-info">
+            <strong>Loading person types...</strong>
+        </div>
+        
+        <form id="addPersonForm">
+            <div class="form-group">
+                <label for="name">Full Name *</label>
+                <input type="text" id="name" name="name" required 
+                       placeholder="Enter full name">
+            </div>
+            
+            <div class="form-group">
+                <label for="person_id">Person ID *</label>
+                <input type="text" id="person_id" name="person_id" required 
+                       placeholder="Unique identifier (e.g., EMP001, STU123)">
+            </div>
+            
+            <div class="form-group">
+                <label for="person_type_id">Person Type *</label>
+                <select id="person_type_id" name="person_type_id" required>
+                    <option value="">Select a person type...</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" 
+                       placeholder="email@example.com">
+            </div>
+            
+            <div class="form-group">
+                <label for="phone">Phone</label>
+                <input type="tel" id="phone" name="phone" 
+                       placeholder="Phone number">
+            </div>
+            
+            <div class="form-group">
+                <button type="submit" class="btn-primary">Add Person</button>
+                <button type="button" class="btn-secondary" onclick="clearForm()">Clear Form</button>
+            </div>
+        </form>
+        
+        <div id="result"></div>
+    </div>
+
+    <script>
+        let personTypes = [];
+        
+        // Load person types when page loads
+        async function loadPersonTypes() {
+            const infoDiv = document.getElementById('personTypesInfo');
+            const select = document.getElementById('person_type_id');
+            
+            try {
+                const response = await fetch('/api/attendance/person-types');
+                const data = await response.json();
+                
+                if (data.success) {
+                    personTypes = data.data;
+                    
+                    // Clear existing options
+                    select.innerHTML = '<option value="">Select a person type...</option>';
+                    
+                    // Add person type options
+                    personTypes.forEach(type => {
+                        const option = document.createElement('option');
+                        option.value = type.id;
+                        option.textContent = `${type.name} (${type.code}) - ${type.person_count} persons`;
+                        select.appendChild(option);
+                    });
+                    
+                    infoDiv.innerHTML = `
+                        <strong>✅ Loaded ${personTypes.length} person types:</strong><br>
+                        ${personTypes.map(t => `${t.name} (${t.code})`).join(', ')}
+                    `;
+                    infoDiv.style.backgroundColor = '#d4edda';
+                    infoDiv.style.color = '#155724';
+                } else {
+                    throw new Error(data.error || 'Failed to load person types');
+                }
+            } catch (error) {
+                infoDiv.innerHTML = `<strong>❌ Error loading person types:</strong> ${error.message}`;
+                infoDiv.style.backgroundColor = '#f8d7da';
+                infoDiv.style.color = '#721c24';
+            }
+        }
+        
+        // Handle form submission
+        document.getElementById('addPersonForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const resultDiv = document.getElementById('result');
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData);
+            
+            // Validate required fields
+            if (!data.name || !data.person_id || !data.person_type_id) {
+                resultDiv.innerHTML = '<div class="error">❌ Please fill in all required fields</div>';
+                return;
+            }
+            
+            resultDiv.innerHTML = '<div class="loading">⏳ Adding person...</div>';
+            
+            try {
+                // Actually create the person via API
+                const response = await fetch('/api/attendance/persons', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    const selectedType = personTypes.find(t => t.id == data.person_type_id);
+
+                    resultDiv.innerHTML = `
+                        <div class="success">
+                            ✅ Person created successfully!<br><br>
+                            <strong>Name:</strong> ${result.data.name}<br>
+                            <strong>Person ID:</strong> ${result.data.person_id}<br>
+                            <strong>Type:</strong> ${selectedType ? selectedType.name : 'Unknown'}<br>
+                            <strong>Email:</strong> ${result.data.email || 'Not provided'}<br>
+                            <strong>Phone:</strong> ${result.data.phone || 'Not provided'}<br>
+                            <strong>Database ID:</strong> ${result.data.id}<br><br>
+                            <em>✅ Person has been added to the Odoo database!</em>
+                        </div>
+                    `;
+
+                    // Clear form after successful creation
+                    setTimeout(() => {
+                        clearForm();
+                    }, 5000);
+                } else {
+                    throw new Error(result.error || 'Failed to create person');
+                }
+                
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error">❌ Error: ${error.message}</div>`;
+            }
+        });
+        
+        function clearForm() {
+            document.getElementById('addPersonForm').reset();
+            document.getElementById('result').innerHTML = '';
+        }
+        
+        // Load person types when page loads
+        window.onload = loadPersonTypes;
+    </script>
+</body>
+</html>

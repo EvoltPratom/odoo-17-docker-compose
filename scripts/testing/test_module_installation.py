@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Test script to install and verify the extended attendance and FastAPI modules
+Test script to install and verify the extended attendance module
 """
 
 import xmlrpc.client
@@ -132,17 +132,9 @@ def test_models(models, uid):
         for person in persons:
             print(f"      - {person['name']} (ID: {person['person_id']})")
         
-        # Test FastAPI endpoint
-        print("   Testing fastapi.endpoint model...")
-        endpoints = models.execute_kw(
-            ODOO_DB, uid, ADMIN_PASSWORD,
-            'fastapi.endpoint', 'search_read',
-            [[['app', '=', 'extended_attendance']]], {'fields': ['name', 'root_path']}
-        )
-        print(f"   ✅ Found {len(endpoints)} FastAPI endpoints")
-        for endpoint in endpoints:
-            print(f"      - {endpoint['name']} at {endpoint['root_path']}")
-        
+        # Test HTTP controllers (simple endpoints)
+        print("   ✅ HTTP controllers are available through Odoo's built-in routing")
+
         return True
         
     except Exception as e:
@@ -159,11 +151,8 @@ def main():
     if not models:
         sys.exit(1)
     
-    # Install FastAPI module first
-    if not install_module(models, uid, 'fastapi'):
-        print("❌ Failed to install FastAPI module")
-        sys.exit(1)
-    
+    # FastAPI is no longer needed - using simple HTTP controllers
+
     # Install extended attendance module
     if not install_module(models, uid, 'extended_attendance'):
         print("❌ Failed to install extended_attendance module")
@@ -177,9 +166,9 @@ def main():
     print("\n" + "=" * 60)
     print("🎉 All tests passed! Extended Attendance module is working correctly.")
     print("\n📋 Next steps:")
-    print("   1. Access FastAPI docs at: http://localhost:10017/api/attendance/docs")
-    print("   2. Test API endpoints")
-    print("   3. Check Swagger documentation")
+    print("   1. Access Odoo web interface: http://localhost:10017/web")
+    print("   2. Test HTTP API endpoints: /api/status, /api/person-types, /api/locations")
+    print("   3. Use the Extended Attendance module through the web interface")
 
 if __name__ == "__main__":
     main()

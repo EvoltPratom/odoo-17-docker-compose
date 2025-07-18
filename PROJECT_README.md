@@ -31,7 +31,7 @@ A comprehensive multi-location attendance tracking system built as an Odoo 17 mo
 - **Device Integration**: Support for RFID, biometric, QR codes
 - **Custom Fields**: Extensible person data
 - **Operating Hours**: Location-specific time restrictions
-- **HTTP API**: Simple REST-like endpoints
+- **HTTP API**: Simple REST-like endpoints (no FastAPI dependency)
 
 ### Demo Data
 - 5 Person Types (Admin, Owner, Employee, Student, Guest)
