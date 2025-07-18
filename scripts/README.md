@@ -9,6 +9,10 @@ scripts/
 ├── setup/          # Module installation and setup scripts
 ├── testing/        # Testing and validation scripts
 ├── utils/          # Utility scripts for development
+├── examples/       # Example usage scripts
+├── frontend/       # Frontend and API documentation
+├── legacy/         # Legacy/deprecated scripts
+├── docker/         # Docker-related utilities
 └── README.md       # This file
 ```
 
@@ -42,6 +46,57 @@ scripts/
 - **Purpose**: Interactive Odoo API explorer
 - **Usage**: `python3 scripts/utils/odoo_api_explorer.py`
 - **Description**: Provides an interactive interface to explore Odoo models and data
+
+### `find_credentials.py`
+- **Purpose**: Find and test Odoo database credentials
+- **Usage**: `python3 scripts/utils/find_credentials.py`
+- **Description**: Discovers available databases and tests authentication
+
+### `check_odoo.py`
+- **Purpose**: Health check for Odoo installation
+- **Usage**: `python3 scripts/utils/check_odoo.py`
+- **Description**: Verifies Odoo is running and accessible
+
+### `check_models.py`
+- **Purpose**: Validate Extended Attendance models
+- **Usage**: `python3 scripts/utils/check_models.py`
+- **Description**: Checks if all required models are properly installed
+
+## Example Scripts (`examples/`)
+
+### `extended_attendance_example.py`
+- **Purpose**: Comprehensive usage example
+- **Usage**: `python3 scripts/examples/extended_attendance_example.py`
+- **Description**: Shows how to use the Extended Attendance API
+
+### `simple_extended_attendance.py`
+- **Purpose**: Simple usage example
+- **Usage**: `python3 scripts/examples/simple_extended_attendance.py`
+- **Description**: Basic example of attendance tracking
+
+### `quick_start.py`
+- **Purpose**: Quick start demonstration
+- **Usage**: `python3 scripts/examples/quick_start.py`
+- **Description**: Fast setup and demo of core features
+
+## Frontend Scripts (`frontend/`)
+
+### `real_frontend_server.py`
+- **Purpose**: Frontend development server
+- **Usage**: `python3 scripts/frontend/real_frontend_server.py`
+- **Description**: Serves the custom frontend interface
+
+### `swagger.html` / `swagger.json`
+- **Purpose**: API documentation
+- **Description**: Interactive API documentation and specifications
+
+## Legacy Scripts (`legacy/`)
+
+Contains deprecated scripts that are kept for reference:
+- `attendance_manager.py` - Old attendance management
+- `employee_manager.py` - Old employee management
+- `export_manager.py` - Old export functionality
+- `create_backend_data.py` - Old data creation scripts
 
 ## Configuration
 

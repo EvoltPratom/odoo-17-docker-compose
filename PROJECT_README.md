@@ -43,12 +43,18 @@ A comprehensive multi-location attendance tracking system built as an Odoo 17 mo
 ```
 ├── addons/
 │   └── extended_attendance/     # Main module
-├── scripts/
-│   ├── setup/                   # Installation scripts
-│   ├── testing/                 # Test scripts
-│   └── utils/                   # Utility scripts
+├── scripts/                     # All scripts organized by purpose
+│   ├── setup/                   # Installation & setup scripts
+│   ├── testing/                 # Test & validation scripts
+│   ├── utils/                   # Development utilities
+│   ├── examples/                # Usage examples
+│   ├── frontend/                # Frontend & API docs
+│   ├── legacy/                  # Deprecated scripts
+│   └── docker/                  # Docker utilities
 ├── docker-compose.yml           # Docker configuration
-└── README.md                    # This file
+├── entrypoint.sh               # Docker entrypoint
+├── run.sh                      # Project startup
+└── PROJECT_README.md           # This file
 ```
 
 ## 🔧 Configuration
