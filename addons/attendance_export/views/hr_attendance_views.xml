@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Add export button to attendance tree view -->
+    <record id="view_hr_attendance_tree_export" model="ir.ui.view">
+        <field name="name">hr.attendance.tree.export</field>
+        <field name="model">hr.attendance</field>
+        <field name="inherit_id" ref="hr_attendance.view_attendance_tree"/>
+        <field name="arch" type="xml">
+            <tree position="attributes">
+                <attribute name="action">
+                    <button name="%(action_attendance_export_wizard)d" string="Export Selected" type="action" class="oe_highlight"/>
+                </attribute>
+            </tree>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        
+        <!-- Attendance Record Tree View -->
+        <record id="view_attendance_record_tree" model="ir.ui.view">
+            <field name="name">extended.attendance.record.tree</field>
+            <field name="model">extended.attendance.record</field>
+            <field name="arch" type="xml">
+                <tree string="Attendance Records" decoration-success="state == 'checked_out'" 
+                      decoration-info="state == 'checked_in'" decoration-warning="state == 'overtime'">
+                    <field name="person_name"/>
+                    <field name="person_type_id"/>
+                    <field name="location_name"/>
+                    <field name="check_in"/>
+                    <field name="check_out"/>
+                    <field name="worked_hours" widget="float_time"/>
+                    <field name="duration_display"/>
+                    <field name="state"/>
+                    <field name="is_overtime"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Attendance Record Form View -->
+        <record id="view_attendance_record_form" model="ir.ui.view">
+            <field name="name">extended.attendance.record.form</field>
+            <field name="model">extended.attendance.record</field>
+            <field name="arch" type="xml">
+                <form string="Attendance Record">
+                    <header>
+                        <button name="action_check_out" type="object" string="Check Out" class="oe_highlight"
+                                invisible="check_out"/>
+                        <button name="action_approve" type="object" string="Approve" class="oe_highlight"
+                                groups="extended_attendance.group_attendance_manager"
+                                invisible="approved_by"/>
+                        <field name="state" widget="statusbar"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_title">
+                            <h1>
+                                <field name="display_name"/>
+                            </h1>
+                        </div>
+                        
+                        <group>
+                            <group>
+                                <field name="person_id"/>
+                                <field name="person_type_id"/>
+                                <field name="location_id"/>
+                                <field name="device_id"/>
+                            </group>
+                            <group>
+                                <field name="check_in"/>
+                                <field name="check_out"/>
+                                <field name="worked_hours" widget="float_time"/>
+                                <field name="duration_display"/>
+                                <field name="is_overtime"/>
+                            </group>
+                        </group>
+                        
+                        <group string="Approval" invisible="not approved_by">
+                            <group>
+                                <field name="approved_by"/>
+                                <field name="approval_date"/>
+                            </group>
+                        </group>
+                        
+                        <field name="notes" placeholder="Additional notes about this attendance record..."/>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- Attendance Record Search View -->
+        <record id="view_attendance_record_search" model="ir.ui.view">
+            <field name="name">extended.attendance.record.search</field>
+            <field name="model">extended.attendance.record</field>
+            <field name="arch" type="xml">
+                <search string="Attendance Records">
+                    <field name="person_name"/>
+                    <field name="location_name"/>
+                    <field name="person_type_id"/>
+                    <field name="check_in"/>
+                    <filter string="Today" name="today" domain="[('check_in', '&gt;=', datetime.datetime.combine(context_today(), datetime.time(0,0,0))), ('check_in', '&lt;=', datetime.datetime.combine(context_today(), datetime.time(23,59,59)))]"/>
+                    <filter string="This Week" name="this_week" domain="[('check_in', '&gt;=', (context_today() - datetime.timedelta(days=context_today().weekday())).strftime('%Y-%m-%d')), ('check_in', '&lt;=', (context_today() + datetime.timedelta(days=6-context_today().weekday())).strftime('%Y-%m-%d'))]"/>
+                    <filter string="This Month" name="this_month" domain="[('check_in', '&gt;=', datetime.datetime.now().strftime('%Y-%m-01'))]"/>
+                    <separator/>
+                    <filter string="Checked In" name="checked_in" domain="[('state', '=', 'checked_in')]"/>
+                    <filter string="Checked Out" name="checked_out" domain="[('state', '=', 'checked_out')]"/>
+                    <filter string="Overtime" name="overtime" domain="[('state', '=', 'overtime')]"/>
+                    <filter string="Incomplete" name="incomplete" domain="[('state', '=', 'incomplete')]"/>
+                    <separator/>
+                    <filter string="Approved" name="approved" domain="[('approved_by', '!=', False)]"/>
+                    <filter string="Pending Approval" name="pending_approval" domain="[('approved_by', '=', False)]"/>
+                    <group expand="0" string="Group By">
+                        <filter string="Person" name="group_person" context="{'group_by': 'person_id'}"/>
+                        <filter string="Person Type" name="group_person_type" context="{'group_by': 'person_type_id'}"/>
+                        <filter string="Location" name="group_location" context="{'group_by': 'location_id'}"/>
+                        <filter string="State" name="group_state" context="{'group_by': 'state'}"/>
+                        <filter string="Check In Date" name="group_check_in_date" context="{'group_by': 'check_in:day'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <!-- Attendance Record Calendar View -->
+        <record id="view_attendance_record_calendar" model="ir.ui.view">
+            <field name="name">extended.attendance.record.calendar</field>
+            <field name="model">extended.attendance.record</field>
+            <field name="arch" type="xml">
+                <calendar string="Attendance Calendar" date_start="check_in" date_stop="check_out">
+                    <field name="person_name"/>
+                    <field name="location_name"/>
+                </calendar>
+            </field>
+        </record>
+
+        <!-- Attendance Record Pivot View -->
+        <record id="view_attendance_record_pivot" model="ir.ui.view">
+            <field name="name">extended.attendance.record.pivot</field>
+            <field name="model">extended.attendance.record</field>
+            <field name="arch" type="xml">
+                <pivot string="Attendance Analysis">
+                    <field name="person_type_id" type="row"/>
+                    <field name="location_id" type="row"/>
+                    <field name="check_in" interval="day" type="col"/>
+                    <field name="worked_hours" type="measure"/>
+                </pivot>
+            </field>
+        </record>
+
+        <!-- Attendance Record Graph View -->
+        <record id="view_attendance_record_graph" model="ir.ui.view">
+            <field name="name">extended.attendance.record.graph</field>
+            <field name="model">extended.attendance.record</field>
+            <field name="arch" type="xml">
+                <graph string="Attendance Analysis" type="bar">
+                    <field name="check_in" interval="day"/>
+                    <field name="worked_hours" type="measure"/>
+                </graph>
+            </field>
+        </record>
+
+        <!-- Attendance Record Action -->
+        <record id="action_attendance_record" model="ir.actions.act_window">
+            <field name="name">Attendance Records</field>
+            <field name="res_model">extended.attendance.record</field>
+            <field name="view_mode">tree,form,calendar,pivot,graph</field>
+            <field name="context">{'search_default_today': 1}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    No attendance records yet!
+                </p>
+                <p>
+                    Attendance records are created when people check in and out at different locations.
+                    Use the API or manual entry to create attendance records.
+                </p>
+            </field>
+        </record>
+
+        <!-- Current Attendance Action -->
+        <record id="action_current_attendance" model="ir.actions.act_window">
+            <field name="name">Current Attendance</field>
+            <field name="res_model">extended.attendance.record</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('check_out', '=', False)]</field>
+            <field name="context">{'search_default_checked_in': 1}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    No one is currently checked in!
+                </p>
+                <p>
+                    This view shows all people who are currently checked in at various locations.
+                </p>
+            </field>
+        </record>
+
+    </data>
+</odoo>

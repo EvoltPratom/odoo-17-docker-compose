@@ -1,0 +1,1172 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Extended Attendance API",
+    "description": "Auto-generated API documentation for Odoo HTTP controllers",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:10017",
+      "description": "Local Odoo server"
+    }
+  ],
+  "paths": {
+    "/api/attendance/person-types": {
+      "get": {
+        "summary": "Get Person Types",
+        "description": "Get all person types",
+        "operationId": "get_get_person_types",
+        "tags": [
+          "Attendance API"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create Person Type",
+        "description": "Create a new person type",
+        "operationId": "post_create_person_type",
+        "tags": [
+          "Attendance API"
+        ],
+        "parameters": [
+          {
+            "name": "**kwargs",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Parameter: **kwargs"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "**kwargs": {
+                    "type": "string",
+                    "description": "Parameter: **kwargs"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/api/attendance/person-types/<int:type_id>": {
+      "put": {
+        "summary": "Update Person Type",
+        "description": "Update a person type",
+        "operationId": "put_update_person_type",
+        "tags": [
+          "Attendance API"
+        ],
+        "parameters": [
+          {
+            "name": "type_id",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Parameter: type_id"
+          },
+          {
+            "name": "**kwargs",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Parameter: **kwargs"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "type_id": {
+                    "type": "string",
+                    "description": "Parameter: type_id"
+                  },
+                  "**kwargs": {
+                    "type": "string",
+                    "description": "Parameter: **kwargs"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete Person Type",
+        "description": "Delete a person type",
+        "operationId": "delete_delete_person_type",
+        "tags": [
+          "Attendance API"
+        ],
+        "parameters": [
+          {
+            "name": "type_id",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Parameter: type_id"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/api/attendance/locations": {
+      "get": {
+        "summary": "Get Locations",
+        "description": "Get all locations",
+        "operationId": "get_get_locations",
+        "tags": [
+          "Attendance API"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create Location",
+        "description": "Create a new location",
+        "operationId": "post_create_location",
+        "tags": [
+          "Attendance API"
+        ],
+        "parameters": [
+          {
+            "name": "**kwargs",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Parameter: **kwargs"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "**kwargs": {
+                    "type": "string",
+                    "description": "Parameter: **kwargs"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/api/attendance/locations/<int:location_id>": {
+      "put": {
+        "summary": "Update Location",
+        "description": "Update a location",
+        "operationId": "put_update_location",
+        "tags": [
+          "Attendance API"
+        ],
+        "parameters": [
+          {
+            "name": "location_id",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Parameter: location_id"
+          },
+          {
+            "name": "**kwargs",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Parameter: **kwargs"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "location_id": {
+                    "type": "string",
+                    "description": "Parameter: location_id"
+                  },
+                  "**kwargs": {
+                    "type": "string",
+                    "description": "Parameter: **kwargs"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete Location",
+        "description": "Delete a location",
+        "operationId": "delete_delete_location",
+        "tags": [
+          "Attendance API"
+        ],
+        "parameters": [
+          {
+            "name": "location_id",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Parameter: location_id"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/api/attendance/persons": {
+      "get": {
+        "summary": "Get Persons",
+        "description": "Get all persons with optional filtering",
+        "operationId": "get_get_persons",
+        "tags": [
+          "Attendance API"
+        ],
+        "parameters": [
+          {
+            "name": "**kwargs",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Parameter: **kwargs"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create Person",
+        "description": "Create a new person",
+        "operationId": "post_create_person",
+        "tags": [
+          "Attendance API"
+        ],
+        "parameters": [
+          {
+            "name": "**kwargs",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Parameter: **kwargs"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "**kwargs": {
+                    "type": "string",
+                    "description": "Parameter: **kwargs"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/api/attendance/persons/<int:person_id>": {
+      "put": {
+        "summary": "Update Person",
+        "description": "Update a person",
+        "operationId": "put_update_person",
+        "tags": [
+          "Attendance API"
+        ],
+        "parameters": [
+          {
+            "name": "person_id",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Parameter: person_id"
+          },
+          {
+            "name": "**kwargs",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Parameter: **kwargs"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "person_id": {
+                    "type": "string",
+                    "description": "Parameter: person_id"
+                  },
+                  "**kwargs": {
+                    "type": "string",
+                    "description": "Parameter: **kwargs"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete Person",
+        "description": "Delete a person",
+        "operationId": "delete_delete_person",
+        "tags": [
+          "Attendance API"
+        ],
+        "parameters": [
+          {
+            "name": "person_id",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Parameter: person_id"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/api/attendance/persons/search": {
+      "post": {
+        "summary": "Search Person",
+        "description": "Search person by identifier",
+        "operationId": "post_search_person",
+        "tags": [
+          "Attendance API"
+        ],
+        "parameters": [
+          {
+            "name": "identifier",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Parameter: identifier"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "identifier": {
+                    "type": "string",
+                    "description": "Parameter: identifier"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/api/attendance/check-in": {
+      "post": {
+        "summary": "Check In",
+        "description": "Check in a person at a location",
+        "operationId": "post_check_in",
+        "tags": [
+          "Attendance API"
+        ],
+        "parameters": [
+          {
+            "name": "person_identifier",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Parameter: person_identifier"
+          },
+          {
+            "name": "location_code",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Parameter: location_code"
+          },
+          {
+            "name": "device_id",
+            "in": "body",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Parameter: device_id"
+          },
+          {
+            "name": "check_in_time",
+            "in": "body",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Parameter: check_in_time"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "person_identifier": {
+                    "type": "string",
+                    "description": "Parameter: person_identifier"
+                  },
+                  "location_code": {
+                    "type": "string",
+                    "description": "Parameter: location_code"
+                  },
+                  "device_id": {
+                    "type": "string",
+                    "description": "Parameter: device_id"
+                  },
+                  "check_in_time": {
+                    "type": "string",
+                    "description": "Parameter: check_in_time"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/api/attendance/check-out": {
+      "post": {
+        "summary": "Check Out",
+        "description": "Check out a person",
+        "operationId": "post_check_out",
+        "tags": [
+          "Attendance API"
+        ],
+        "parameters": [
+          {
+            "name": "person_identifier",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Parameter: person_identifier"
+          },
+          {
+            "name": "check_out_time",
+            "in": "body",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Parameter: check_out_time"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "person_identifier": {
+                    "type": "string",
+                    "description": "Parameter: person_identifier"
+                  },
+                  "check_out_time": {
+                    "type": "string",
+                    "description": "Parameter: check_out_time"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/api/attendance/current": {
+      "get": {
+        "summary": "Get Current Attendance",
+        "description": "Get current attendance (people currently checked in)",
+        "operationId": "get_get_current_attendance",
+        "tags": [
+          "Attendance API"
+        ],
+        "parameters": [
+          {
+            "name": "location_code",
+            "in": "body",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Parameter: location_code"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/api/attendance/records": {
+      "get": {
+        "summary": "Get Attendance Records",
+        "description": "Get attendance records with filtering",
+        "operationId": "get_get_attendance_records",
+        "tags": [
+          "Attendance API"
+        ],
+        "parameters": [
+          {
+            "name": "**kwargs",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Parameter: **kwargs"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/api/attendance/report": {
+      "post": {
+        "summary": "Get Attendance Report",
+        "description": "Generate attendance report",
+        "operationId": "post_get_attendance_report",
+        "tags": [
+          "Attendance API"
+        ],
+        "parameters": [
+          {
+            "name": "date_from",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Parameter: date_from"
+          },
+          {
+            "name": "date_to",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Parameter: date_to"
+          },
+          {
+            "name": "location_code",
+            "in": "body",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Parameter: location_code"
+          },
+          {
+            "name": "person_type_code",
+            "in": "body",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Parameter: person_type_code"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "date_from": {
+                    "type": "string",
+                    "description": "Parameter: date_from"
+                  },
+                  "date_to": {
+                    "type": "string",
+                    "description": "Parameter: date_to"
+                  },
+                  "location_code": {
+                    "type": "string",
+                    "description": "Parameter: location_code"
+                  },
+                  "person_type_code": {
+                    "type": "string",
+                    "description": "Parameter: person_type_code"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    }
+  }
+}

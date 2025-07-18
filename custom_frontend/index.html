@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attendance Management System</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="styles.css" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <h1><i class="fas fa-clock"></i> Attendance System</h1>
+                <div class="header-actions">
+                    <span id="currentTime" class="current-time"></span>
+                    <button id="settingsBtn" class="btn-icon" onclick="toggleSettings()">
+                        <i class="fas fa-cog"></i>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Settings Panel -->
+        <div id="settingsPanel" class="settings-panel">
+            <div class="settings-content">
+                <h3>Settings</h3>
+                <div class="form-group">
+                    <label for="dbName">Database Name:</label>
+                    <input type="text" id="dbName" placeholder="attendance_db">
+                </div>
+                <div class="form-group">
+                    <label for="adminUser">Admin Username:</label>
+                    <input type="text" id="adminUser" placeholder="admin">
+                </div>
+                <div class="form-group">
+                    <label for="adminPass">Admin Password:</label>
+                    <input type="password" id="adminPass" placeholder="admin">
+                </div>
+                <div class="settings-actions">
+                    <button onclick="saveSettings()" class="btn-primary">Save</button>
+                    <button onclick="toggleSettings()" class="btn-secondary">Cancel</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="message-container">
+                <div id="message"></div>
+            </div>
+
+            <!-- Employee Selection -->
+            <div class="card employee-card">
+                <div class="card-header">
+                    <h2><i class="fas fa-users"></i> Employee Selection</h2>
+                    <button onclick="addEmployee()" class="btn-small btn-primary">
+                        <i class="fas fa-plus"></i> Add Employee
+                    </button>
+                </div>
+                <div class="card-content">
+                    <div class="employee-selector">
+                        <div class="form-group">
+                            <label for="employeeSelect">Select Employee:</label>
+                            <select id="employeeSelect" onchange="onEmployeeChange()">
+                                <option value="">Loading employees...</option>
+                            </select>
+                        </div>
+                        <div class="employee-info" id="employeeInfo"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Clock In/Out Section -->
+            <div class="card clock-card">
+                <div class="card-header">
+                    <h2><i class="fas fa-clock"></i> Time Clock</h2>
+                    <div class="current-status" id="currentStatus"></div>
+                </div>
+                <div class="card-content">
+                    <div class="clock-section">
+                        <button id="clockInBtn" class="clock-btn clock-in" onclick="clockIn()">
+                            <i class="fas fa-sign-in-alt"></i>
+                            <span>Clock In</span>
+                        </button>
+                        <button id="clockOutBtn" class="clock-btn clock-out" onclick="clockOut()">
+                            <i class="fas fa-sign-out-alt"></i>
+                            <span>Clock Out</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Attendance -->
+            <div class="card attendance-card">
+                <div class="card-header">
+                    <h2><i class="fas fa-history"></i> Recent Attendance</h2>
+                    <button onclick="loadAttendance()" class="btn-small btn-secondary">
+                        <i class="fas fa-refresh"></i> Refresh
+                    </button>
+                </div>
+                <div class="card-content">
+                    <div id="attendanceList" class="attendance-list">
+                        <div class="loading">Loading attendance records...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Export & Reports -->
+            <div class="card export-card">
+                <div class="card-header">
+                    <h2><i class="fas fa-download"></i> Export & Reports</h2>
+                </div>
+                <div class="card-content">
+                    <div class="export-options">
+                        <div class="form-group">
+                            <label for="exportDateFrom">From Date:</label>
+                            <input type="date" id="exportDateFrom">
+                        </div>
+                        <div class="form-group">
+                            <label for="exportDateTo">To Date:</label>
+                            <input type="date" id="exportDateTo">
+                        </div>
+                        <div class="export-actions">
+                            <button onclick="exportAttendance()" class="btn-primary">
+                                <i class="fas fa-file-export"></i> Export JSON
+                            </button>
+                            <button onclick="generateReport()" class="btn-secondary">
+                                <i class="fas fa-chart-bar"></i> Generate Report
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>&copy; 2024 Attendance Management System - Powered by Odoo</p>
+        </footer>
+    </div>
+
+    <!-- Modals -->
+    <div id="employeeModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add New Employee</h3>
+                <button onclick="closeModal()" class="btn-close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="employeeForm">
+                    <div class="form-group">
+                        <label for="empName">Employee Name:</label>
+                        <input type="text" id="empName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="empCode">Employee Code:</label>
+                        <input type="text" id="empCode" placeholder="e.g., EMP001">
+                    </div>
+                    <div class="form-group">
+                        <label for="empEmail">Email:</label>
+                        <input type="email" id="empEmail">
+                    </div>
+                    <div class="form-group">
+                        <label for="empDepartment">Department:</label>
+                        <input type="text" id="empDepartment">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button onclick="saveEmployee()" class="btn-primary">Save</button>
+                <button onclick="closeModal()" class="btn-secondary">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="odoo-api.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

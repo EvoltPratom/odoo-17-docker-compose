@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        
+        <!-- Person Type Tree View -->
+        <record id="view_person_type_tree" model="ir.ui.view">
+            <field name="name">person.type.tree</field>
+            <field name="model">person.type</field>
+            <field name="arch" type="xml">
+                <tree string="Person Types" decoration-muted="not active">
+                    <field name="sequence" widget="handle"/>
+                    <field name="name"/>
+                    <field name="code"/>
+                    <field name="person_count"/>
+                    <field name="default_access_level"/>
+                    <field name="requires_approval"/>
+                    <field name="is_system"/>
+                    <field name="active"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Person Type Form View -->
+        <record id="view_person_type_form" model="ir.ui.view">
+            <field name="name">person.type.form</field>
+            <field name="model">person.type</field>
+            <field name="arch" type="xml">
+                <form string="Person Type">
+                    <header>
+                        <field name="active" widget="boolean_toggle"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <button name="action_view_persons" type="object" class="oe_stat_button" icon="fa-users">
+                                <field name="person_count" widget="statinfo" string="Persons"/>
+                            </button>
+                        </div>
+                        
+                        <div class="oe_title">
+                            <h1>
+                                <field name="name" placeholder="Person Type Name"/>
+                            </h1>
+                        </div>
+                        
+                        <group>
+                            <group>
+                                <field name="code"/>
+                                <field name="sequence"/>
+                                <field name="color" widget="color"/>
+                            </group>
+                            <group>
+                                <field name="is_system"/>
+                                <field name="can_delete"/>
+                                <field name="requires_approval"/>
+                            </group>
+                        </group>
+                        
+                        <group string="Access Configuration">
+                            <group>
+                                <field name="default_access_level"/>
+                                <field name="max_duration_hours"/>
+                            </group>
+                        </group>
+                        
+                        <field name="description" placeholder="Description of this person type..."/>
+                        
+                        <notebook>
+                            <page string="Custom Fields">
+                                <field name="custom_field_ids">
+                                    <tree editable="bottom">
+                                        <field name="sequence" widget="handle"/>
+                                        <field name="name"/>
+                                        <field name="technical_name"/>
+                                        <field name="field_type"/>
+                                        <field name="required"/>
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- Person Type Search View -->
+        <record id="view_person_type_search" model="ir.ui.view">
+            <field name="name">person.type.search</field>
+            <field name="model">person.type</field>
+            <field name="arch" type="xml">
+                <search string="Person Types">
+                    <field name="name"/>
+                    <field name="code"/>
+                    <field name="description"/>
+                    <filter string="Active" name="active" domain="[('active', '=', True)]"/>
+                    <filter string="Inactive" name="inactive" domain="[('active', '=', False)]"/>
+                    <filter string="System Types" name="system" domain="[('is_system', '=', True)]"/>
+                    <filter string="Custom Types" name="custom" domain="[('is_system', '=', False)]"/>
+                    <group expand="0" string="Group By">
+                        <filter string="Access Level" name="group_access_level" context="{'group_by': 'default_access_level'}"/>
+                        <filter string="System/Custom" name="group_system" context="{'group_by': 'is_system'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <!-- Person Type Action -->
+        <record id="action_person_type" model="ir.actions.act_window">
+            <field name="name">Person Types</field>
+            <field name="res_model">person.type</field>
+            <field name="view_mode">tree,form</field>
+            <field name="context">{'search_default_active': 1}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create your first person type!
+                </p>
+                <p>
+                    Person types define different categories of people in your organization
+                    (employees, students, guests, etc.) with their access levels and permissions.
+                </p>
+            </field>
+        </record>
+
+    </data>
+</odoo>

@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        
+        <!-- Main Menu -->
+        <menuitem id="menu_extended_attendance_root" 
+                  name="Extended Attendance" 
+                  sequence="50" 
+                  web_icon="extended_attendance,static/description/icon.png"/>
+
+        <!-- Attendance Submenu -->
+        <menuitem id="menu_attendance" 
+                  name="Attendance" 
+                  parent="menu_extended_attendance_root" 
+                  sequence="10"/>
+
+        <menuitem id="menu_attendance_records" 
+                  name="Attendance Records" 
+                  parent="menu_attendance" 
+                  action="action_attendance_record" 
+                  sequence="10"/>
+
+        <menuitem id="menu_current_attendance" 
+                  name="Current Attendance" 
+                  parent="menu_attendance" 
+                  action="action_current_attendance" 
+                  sequence="20"/>
+
+        <!-- People Submenu -->
+        <menuitem id="menu_people" 
+                  name="People" 
+                  parent="menu_extended_attendance_root" 
+                  sequence="20"/>
+
+        <menuitem id="menu_persons" 
+                  name="Persons" 
+                  parent="menu_people" 
+                  action="action_person" 
+                  sequence="10"/>
+
+        <menuitem id="menu_person_types" 
+                  name="Person Types" 
+                  parent="menu_people" 
+                  action="action_person_type" 
+                  sequence="20"/>
+
+        <!-- Locations Submenu -->
+        <menuitem id="menu_locations" 
+                  name="Locations" 
+                  parent="menu_extended_attendance_root" 
+                  sequence="30"/>
+
+        <menuitem id="menu_attendance_locations" 
+                  name="Attendance Locations" 
+                  parent="menu_locations" 
+                  action="action_location" 
+                  sequence="10"/>
+
+        <!-- Configuration Submenu -->
+        <menuitem id="menu_configuration" 
+                  name="Configuration" 
+                  parent="menu_extended_attendance_root" 
+                  sequence="90" 
+                  groups="extended_attendance.group_attendance_manager"/>
+
+        <menuitem id="menu_config_person_types" 
+                  name="Person Types" 
+                  parent="menu_configuration" 
+                  action="action_person_type" 
+                  sequence="10" 
+                  groups="extended_attendance.group_attendance_manager"/>
+
+        <menuitem id="menu_config_locations" 
+                  name="Locations" 
+                  parent="menu_configuration" 
+                  action="action_location" 
+                  sequence="20" 
+                  groups="extended_attendance.group_attendance_manager"/>
+
+    </data>
+</odoo>

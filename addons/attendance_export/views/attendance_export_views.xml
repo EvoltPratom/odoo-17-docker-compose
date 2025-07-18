@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Tree view for attendance exports -->
+    <record id="view_hr_attendance_export_tree" model="ir.ui.view">
+        <field name="name">hr.attendance.export.tree</field>
+        <field name="model">hr.attendance.export</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="date_from"/>
+                <field name="date_to"/>
+                <field name="export_path"/>
+                <field name="state"/>
+                <field name="last_export_date"/>
+                <field name="auto_export"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Form view for attendance exports -->
+    <record id="view_hr_attendance_export_form" model="ir.ui.view">
+        <field name="name">hr.attendance.export.form</field>
+        <field name="model">hr.attendance.export</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_export" string="Export Now" type="object" 
+                            class="oe_highlight" attrs="{'invisible': [('state', '!=', 'draft')]}"/>
+                    <button name="action_reset_to_draft" string="Reset to Draft" type="object" 
+                            attrs="{'invisible': [('state', '=', 'draft')]}"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="Export Name"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group name="export_config">
+                            <field name="export_path"/>
+                            <field name="date_from"/>
+                            <field name="date_to"/>
+                            <field name="auto_export"/>
+                        </group>
+                        <group name="export_info">
+                            <field name="export_file" readonly="1"/>
+                            <field name="last_export_date" readonly="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Employees">
+                            <field name="employee_ids">
+                                <tree>
+                                    <field name="name"/>
+                                    <field name="barcode"/>
+                                    <field name="department_id"/>
+                                    <field name="job_id"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action for attendance exports -->
+    <record id="action_hr_attendance_export" model="ir.actions.act_window">
+        <field name="name">Attendance Exports</field>
+        <field name="res_model">hr.attendance.export</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create an attendance export configuration
+            </p>
+            <p>
+                Configure and export attendance data to JSON files.
+            </p>
+        </field>
+    </record>
+
+    <!-- Wizard view -->
+    <record id="view_attendance_export_wizard" model="ir.ui.view">
+        <field name="name">attendance.export.wizard.form</field>
+        <field name="model">attendance.export.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Export Attendance Data">
+                <group>
+                    <group>
+                        <field name="name"/>
+                        <field name="export_path"/>
+                        <field name="date_from"/>
+                        <field name="date_to"/>
+                    </group>
+                    <group>
+                        <field name="auto_export"/>
+                    </group>
+                </group>
+                <group string="Employees">
+                    <field name="employee_ids" nolabel="1">
+                        <tree>
+                            <field name="name"/>
+                            <field name="barcode"/>
+                            <field name="department_id"/>
+                            <field name="job_id"/>
+                        </tree>
+                    </field>
+                </group>
+                <footer>
+                    <button name="action_export" string="Export" type="object" class="oe_highlight"/>
+                    <button string="Cancel" class="oe_link" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action for the wizard -->
+    <record id="action_attendance_export_wizard" model="ir.actions.act_window">
+        <field name="name">Export Attendance Data</field>
+        <field name="res_model">attendance.export.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <!-- Menu items -->
+    <menuitem id="menu_attendance_export_root" name="Attendance Export" parent="hr_attendance.menu_hr_attendance_root" sequence="10"/>
+    <menuitem id="menu_attendance_export_config" name="Export Configurations" parent="menu_attendance_export_root" action="action_hr_attendance_export" sequence="1"/>
+    <menuitem id="menu_attendance_export_wizard" name="Export Wizard" parent="menu_attendance_export_root" action="action_attendance_export_wizard" sequence="2"/>
+</odoo>

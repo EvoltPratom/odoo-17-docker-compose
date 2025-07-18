@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Extended Attendance System</title>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <link href="css/main.css" rel="stylesheet">
+    <link href="css/components.css" rel="stylesheet">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="assets/icons/favicon.ico">
+</head>
+<body>
+    <!-- Login Section (shown when not authenticated) -->
+    <div class="login-section" id="loginSection">
+        <div class="login-card">
+            <div class="text-center mb-4">
+                <i class="fas fa-clock text-primary" style="font-size: 3rem;"></i>
+                <h2>Extended Attendance System</h2>
+                <p class="text-muted">Connect to your Odoo server to get started</p>
+            </div>
+            
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="odooUrl" class="form-label">
+                        <i class="fas fa-server"></i> Odoo Server URL
+                    </label>
+                    <input type="url" id="odooUrl" class="form-control" 
+                           value="http://localhost:10017" required
+                           placeholder="http://localhost:8069">
+                </div>
+                
+                <div class="form-group">
+                    <label for="database" class="form-label">
+                        <i class="fas fa-database"></i> Database
+                    </label>
+                    <input type="text" id="database" class="form-control" 
+                           value="odoo" required
+                           placeholder="Database name">
+                </div>
+                
+                <div class="form-group">
+                    <label for="username" class="form-label">
+                        <i class="fas fa-user"></i> Username
+                    </label>
+                    <input type="text" id="username" class="form-control" 
+                           value="admin" required
+                           placeholder="Username">
+                </div>
+                
+                <div class="form-group">
+                    <label for="password" class="form-label">
+                        <i class="fas fa-lock"></i> Password
+                    </label>
+                    <input type="password" id="password" class="form-control" 
+                           value="admin" required
+                           placeholder="Password">
+                </div>
+                
+                <button type="submit" class="btn btn-primary btn-lg w-100">
+                    <i class="fas fa-sign-in-alt"></i>
+                    Connect to Odoo
+                </button>
+            </form>
+            
+            <div class="connection-status mt-3" id="connectionStatus">
+                <span class="status-indicator"></span>
+                <span class="status-text">Disconnected</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Application (shown when authenticated) -->
+    <div class="app-container d-none" id="appContainer">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="header-left">
+                <button class="btn btn-outline" id="sidebarToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1 class="header-title" id="pageTitle">Dashboard</h1>
+            </div>
+            
+            <div class="header-right">
+                <div class="connection-status" id="headerConnectionStatus">
+                    <span class="status-indicator connected"></span>
+                    <span class="status-text">Connected</span>
+                </div>
+                
+                <button class="btn btn-outline" id="refreshData" title="Refresh Data">
+                    <i class="fas fa-sync-alt"></i>
+                </button>
+                
+                <button class="btn btn-outline" id="themeToggle" title="Toggle Theme">
+                    <i class="fas fa-moon"></i>
+                </button>
+                
+                <div class="dropdown">
+                    <button class="btn btn-outline" id="userMenu">
+                        <i class="fas fa-user"></i>
+                        <span id="currentUser">Admin</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="dropdown-menu" id="userDropdown">
+                        <a href="#" class="dropdown-item" id="logoutBtn">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Sidebar -->
+        <aside class="app-sidebar" id="appSidebar">
+            <div class="sidebar-header">
+                <i class="fas fa-clock sidebar-logo"></i>
+                <span class="sidebar-title">Attendance</span>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <button class="nav-item active" data-view="dashboard">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>Dashboard</span>
+                </button>
+                
+                <button class="nav-item" data-view="attendance">
+                    <i class="fas fa-clock"></i>
+                    <span>Attendance</span>
+                </button>
+                
+                <button class="nav-item" data-view="persons">
+                    <i class="fas fa-users"></i>
+                    <span>Persons</span>
+                </button>
+                
+                <button class="nav-item" data-view="locations">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span>Locations</span>
+                </button>
+                
+                <button class="nav-item" data-view="person-types">
+                    <i class="fas fa-tags"></i>
+                    <span>Person Types</span>
+                </button>
+                
+                <button class="nav-item" data-view="reports">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Reports</span>
+                </button>
+                
+                <button class="nav-item" data-view="settings">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
+                </button>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="app-main">
+            <div class="main-content">
+                <!-- Dashboard View -->
+                <div id="dashboardView" class="view-content">
+                    <div class="dashboard-grid">
+                        <div class="stat-card">
+                            <div class="stat-header">
+                                <h3 class="stat-title">Total Persons</h3>
+                                <i class="fas fa-users stat-icon"></i>
+                            </div>
+                            <p class="stat-value" id="totalPersons">0</p>
+                            <div class="stat-change positive">
+                                <i class="fas fa-arrow-up"></i> +5 this week
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card success">
+                            <div class="stat-header">
+                                <h3 class="stat-title">Currently Checked In</h3>
+                                <i class="fas fa-sign-in-alt stat-icon"></i>
+                            </div>
+                            <p class="stat-value" id="currentlyCheckedIn">0</p>
+                            <div class="stat-change">
+                                <i class="fas fa-clock"></i> Real-time
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card warning">
+                            <div class="stat-header">
+                                <h3 class="stat-title">Total Locations</h3>
+                                <i class="fas fa-map-marker-alt stat-icon"></i>
+                            </div>
+                            <p class="stat-value" id="totalLocations">0</p>
+                            <div class="stat-change">
+                                <i class="fas fa-building"></i> Active locations
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card danger">
+                            <div class="stat-header">
+                                <h3 class="stat-title">Today's Attendance</h3>
+                                <i class="fas fa-calendar-day stat-icon"></i>
+                            </div>
+                            <p class="stat-value" id="todayAttendance">0</p>
+                            <div class="stat-change">
+                                <i class="fas fa-chart-line"></i> Records today
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Current Attendance</h3>
+                            <button class="btn btn-primary btn-sm" id="refreshCurrentAttendance">
+                                <i class="fas fa-sync-alt"></i> Refresh
+                            </button>
+                        </div>
+                        <div class="card-body">
+                            <div id="currentAttendanceList">
+                                <!-- Current attendance will be loaded here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Other views will be loaded dynamically -->
+                <div id="attendanceView" class="view-content d-none">
+                    <!-- Attendance management content -->
+                </div>
+                
+                <div id="personsView" class="view-content d-none">
+                    <!-- Persons management content -->
+                </div>
+                
+                <div id="locationsView" class="view-content d-none">
+                    <!-- Locations management content -->
+                </div>
+                
+                <div id="personTypesView" class="view-content d-none">
+                    <!-- Person types management content -->
+                </div>
+                
+                <div id="reportsView" class="view-content d-none">
+                    <!-- Reports content -->
+                </div>
+                
+                <div id="settingsView" class="view-content d-none">
+                    <!-- Settings content -->
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal Container -->
+    <div id="modalContainer"></div>
+
+    <!-- Core JavaScript -->
+    <script src="js/core/constants.js"></script>
+    <script src="js/core/utils.js"></script>
+    <script src="js/core/extended-odoo-api.js"></script>
+    <script src="js/core/app-state.js"></script>
+    
+    <!-- UI Components -->
+    <script src="js/ui/modals.js"></script>
+    <script src="js/ui/forms.js"></script>
+    <script src="js/ui/tables.js"></script>
+    
+    <!-- Feature Components -->
+    <script src="js/components/dashboard.js"></script>
+    <script src="js/components/attendance.js"></script>
+    <script src="js/components/persons.js"></script>
+    <script src="js/components/locations.js"></script>
+    <script src="js/components/person-types.js"></script>
+    <script src="js/components/reports.js"></script>
+    <script src="js/components/settings.js"></script>
+    
+    <!-- Main Application -->
+    <script src="js/app.js"></script>
+</body>
+</html>

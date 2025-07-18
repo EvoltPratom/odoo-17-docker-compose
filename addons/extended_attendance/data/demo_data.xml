@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        
+        <!-- Demo Persons -->
+        <record id="demo_person_admin" model="extended.attendance.person">
+            <field name="name">John Admin</field>
+            <field name="person_id">ADMIN001</field>
+            <field name="person_type_id" ref="person_type_admin"/>
+            <field name="email">john.admin@example.com</field>
+            <field name="phone">+1-555-0101</field>
+            <field name="barcode">ADMIN001_BC</field>
+            <field name="access_level">full</field>
+        </record>
+
+        <record id="demo_person_employee1" model="extended.attendance.person">
+            <field name="name">Alice Johnson</field>
+            <field name="person_id">EMP001</field>
+            <field name="person_type_id" ref="person_type_employee"/>
+            <field name="email">alice.johnson@example.com</field>
+            <field name="phone">+1-555-0102</field>
+            <field name="barcode">EMP001_BC</field>
+            <field name="access_level">standard</field>
+        </record>
+
+        <record id="demo_person_employee2" model="extended.attendance.person">
+            <field name="name">Bob Smith</field>
+            <field name="person_id">EMP002</field>
+            <field name="person_type_id" ref="person_type_employee"/>
+            <field name="email">bob.smith@example.com</field>
+            <field name="phone">+1-555-0103</field>
+            <field name="barcode">EMP002_BC</field>
+            <field name="access_level">standard</field>
+        </record>
+
+        <record id="demo_person_student1" model="extended.attendance.person">
+            <field name="name">Charlie Brown</field>
+            <field name="person_id">STU001</field>
+            <field name="person_type_id" ref="person_type_student"/>
+            <field name="email">charlie.brown@student.example.com</field>
+            <field name="phone">+1-555-0201</field>
+            <field name="barcode">STU001_BC</field>
+            <field name="access_level">basic</field>
+        </record>
+
+        <record id="demo_person_student2" model="extended.attendance.person">
+            <field name="name">Diana Prince</field>
+            <field name="person_id">STU002</field>
+            <field name="person_type_id" ref="person_type_student"/>
+            <field name="email">diana.prince@student.example.com</field>
+            <field name="phone">+1-555-0202</field>
+            <field name="barcode">STU002_BC</field>
+            <field name="access_level">basic</field>
+        </record>
+
+        <record id="demo_person_guest1" model="extended.attendance.person">
+            <field name="name">Eve Visitor</field>
+            <field name="person_id">GST001</field>
+            <field name="person_type_id" ref="person_type_guest"/>
+            <field name="email">eve.visitor@guest.example.com</field>
+            <field name="phone">+1-555-0301</field>
+            <field name="barcode">GST001_BC</field>
+            <field name="access_level">restricted</field>
+            <field name="requires_approval" eval="True"/>
+        </record>
+
+        <!-- Demo Devices -->
+        <record id="demo_device_main_entrance" model="attendance.device">
+            <field name="name">Main Entrance Scanner</field>
+            <field name="device_id">SCANNER_001</field>
+            <field name="location_id" ref="location_main_entrance"/>
+            <field name="device_type">rfid</field>
+        </record>
+
+        <record id="demo_device_reception" model="attendance.device">
+            <field name="name">Reception Tablet</field>
+            <field name="device_id">TABLET_001</field>
+            <field name="location_id" ref="location_reception"/>
+            <field name="device_type">manual</field>
+        </record>
+
+        <record id="demo_device_library" model="attendance.device">
+            <field name="name">Library QR Scanner</field>
+            <field name="device_id">QR_001</field>
+            <field name="location_id" ref="location_library"/>
+            <field name="device_type">qr</field>
+        </record>
+
+        <!-- Demo Operating Hours for Library -->
+        <record id="demo_hours_library_mon" model="extended.attendance.location.hours">
+            <field name="location_id" ref="location_library"/>
+            <field name="weekday">0</field>
+            <field name="time_from">8.0</field>
+            <field name="time_to">18.0</field>
+        </record>
+
+        <record id="demo_hours_library_tue" model="extended.attendance.location.hours">
+            <field name="location_id" ref="location_library"/>
+            <field name="weekday">1</field>
+            <field name="time_from">8.0</field>
+            <field name="time_to">18.0</field>
+        </record>
+
+        <record id="demo_hours_library_wed" model="extended.attendance.location.hours">
+            <field name="location_id" ref="location_library"/>
+            <field name="weekday">2</field>
+            <field name="time_from">8.0</field>
+            <field name="time_to">18.0</field>
+        </record>
+
+        <record id="demo_hours_library_thu" model="extended.attendance.location.hours">
+            <field name="location_id" ref="location_library"/>
+            <field name="weekday">3</field>
+            <field name="time_from">8.0</field>
+            <field name="time_to">18.0</field>
+        </record>
+
+        <record id="demo_hours_library_fri" model="extended.attendance.location.hours">
+            <field name="location_id" ref="location_library"/>
+            <field name="weekday">4</field>
+            <field name="time_from">8.0</field>
+            <field name="time_to">18.0</field>
+        </record>
+
+        <!-- Set library to have operating hours -->
+        <record id="location_library" model="extended.attendance.location">
+            <field name="has_operating_hours" eval="True"/>
+        </record>
+
+        <!-- Demo Custom Fields for Student type -->
+        <record id="demo_custom_field_student_id" model="extended.attendance.custom.field">
+            <field name="name">Student ID Number</field>
+            <field name="technical_name">student_id_number</field>
+            <field name="field_type">char</field>
+            <field name="required" eval="True"/>
+            <field name="person_type_id" ref="person_type_student"/>
+            <field name="sequence">10</field>
+        </record>
+
+        <record id="demo_custom_field_student_grade" model="extended.attendance.custom.field">
+            <field name="name">Grade Level</field>
+            <field name="technical_name">grade_level</field>
+            <field name="field_type">selection</field>
+            <field name="person_type_id" ref="person_type_student"/>
+            <field name="sequence">20</field>
+            <field name="selection_options">Grade 9
+Grade 10
+Grade 11
+Grade 12</field>
+        </record>
+
+        <!-- Demo Custom Fields for Guest type -->
+        <record id="demo_custom_field_guest_company" model="extended.attendance.custom.field">
+            <field name="name">Company</field>
+            <field name="technical_name">company_name</field>
+            <field name="field_type">char</field>
+            <field name="person_type_id" ref="person_type_guest"/>
+            <field name="sequence">10</field>
+        </record>
+
+        <record id="demo_custom_field_guest_purpose" model="extended.attendance.custom.field">
+            <field name="name">Purpose of Visit</field>
+            <field name="technical_name">visit_purpose</field>
+            <field name="field_type">text</field>
+            <field name="required" eval="True"/>
+            <field name="person_type_id" ref="person_type_guest"/>
+            <field name="sequence">20</field>
+        </record>
+
+    </data>
+</odoo>

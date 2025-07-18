@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        
+        <!-- Categories -->
+        <record id="module_category_extended_attendance" model="ir.module.category">
+            <field name="name">Extended Attendance</field>
+            <field name="description">Extended Attendance System</field>
+            <field name="sequence">20</field>
+        </record>
+
+        <!-- Groups -->
+        <record id="group_attendance_user" model="res.groups">
+            <field name="name">Attendance User</field>
+            <field name="category_id" ref="module_category_extended_attendance"/>
+            <field name="comment">Basic attendance user - can view own attendance and check in/out</field>
+        </record>
+
+        <record id="group_attendance_officer" model="res.groups">
+            <field name="name">Attendance Officer</field>
+            <field name="category_id" ref="module_category_extended_attendance"/>
+            <field name="implied_ids" eval="[(4, ref('group_attendance_user'))]"/>
+            <field name="comment">Attendance officer - can manage attendance for others and view reports</field>
+        </record>
+
+        <record id="group_attendance_manager" model="res.groups">
+            <field name="name">Attendance Manager</field>
+            <field name="category_id" ref="module_category_extended_attendance"/>
+            <field name="implied_ids" eval="[(4, ref('group_attendance_officer'))]"/>
+            <field name="comment">Attendance manager - full access to attendance system including configuration</field>
+        </record>
+
+        <!-- Record Rules for Person Types -->
+        <record id="rule_person_type_read_all" model="ir.rule">
+            <field name="name">Person Type: Read All</field>
+            <field name="model_id" ref="model_person_type"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+            <field name="groups" eval="[(4, ref('group_attendance_user'))]"/>
+        </record>
+
+        <record id="rule_person_type_write_manager" model="ir.rule">
+            <field name="name">Person Type: Manager Write</field>
+            <field name="model_id" ref="model_person_type"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="perm_read" eval="False"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+            <field name="groups" eval="[(4, ref('group_attendance_manager'))]"/>
+        </record>
+
+        <!-- Record Rules for Locations -->
+        <record id="rule_location_read_all" model="ir.rule">
+            <field name="name">Location: Read All</field>
+            <field name="model_id" ref="model_attendance_location"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+            <field name="groups" eval="[(4, ref('group_attendance_user'))]"/>
+        </record>
+
+        <record id="rule_location_write_manager" model="ir.rule">
+            <field name="name">Location: Manager Write</field>
+            <field name="model_id" ref="model_attendance_location"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="perm_read" eval="False"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+            <field name="groups" eval="[(4, ref('group_attendance_manager'))]"/>
+        </record>
+
+        <!-- Record Rules for Persons -->
+        <record id="rule_person_read_all" model="ir.rule">
+            <field name="name">Person: Read All</field>
+            <field name="model_id" ref="model_extended_attendance_person"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+            <field name="groups" eval="[(4, ref('group_attendance_user'))]"/>
+        </record>
+
+        <record id="rule_person_write_officer" model="ir.rule">
+            <field name="name">Person: Officer Write</field>
+            <field name="model_id" ref="model_extended_attendance_person"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="perm_read" eval="False"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="False"/>
+            <field name="groups" eval="[(4, ref('group_attendance_officer'))]"/>
+        </record>
+
+        <record id="rule_person_delete_manager" model="ir.rule">
+            <field name="name">Person: Manager Delete</field>
+            <field name="model_id" ref="model_extended_attendance_person"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="perm_read" eval="False"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="True"/>
+            <field name="groups" eval="[(4, ref('group_attendance_manager'))]"/>
+        </record>
+
+        <!-- Record Rules for Attendance Records -->
+        <record id="rule_attendance_read_all" model="ir.rule">
+            <field name="name">Attendance: Read All</field>
+            <field name="model_id" ref="model_extended_attendance_record"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+            <field name="groups" eval="[(4, ref('group_attendance_user'))]"/>
+        </record>
+
+        <record id="rule_attendance_write_officer" model="ir.rule">
+            <field name="name">Attendance: Officer Write</field>
+            <field name="model_id" ref="model_extended_attendance_record"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="perm_read" eval="False"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="False"/>
+            <field name="groups" eval="[(4, ref('group_attendance_officer'))]"/>
+        </record>
+
+        <record id="rule_attendance_delete_manager" model="ir.rule">
+            <field name="name">Attendance: Manager Delete</field>
+            <field name="model_id" ref="model_extended_attendance_record"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="perm_read" eval="False"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="True"/>
+            <field name="groups" eval="[(4, ref('group_attendance_manager'))]"/>
+        </record>
+
+        <!-- Record Rules for Custom Fields -->
+        <record id="rule_custom_field_read_all" model="ir.rule">
+            <field name="name">Custom Field: Read All</field>
+            <field name="model_id" ref="model_extended_attendance_custom_field"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+            <field name="groups" eval="[(4, ref('group_attendance_user'))]"/>
+        </record>
+
+        <record id="rule_custom_field_write_manager" model="ir.rule">
+            <field name="name">Custom Field: Manager Write</field>
+            <field name="model_id" ref="model_extended_attendance_custom_field"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="perm_read" eval="False"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+            <field name="groups" eval="[(4, ref('group_attendance_manager'))]"/>
+        </record>
+
+        <!-- Record Rules for Location Hours -->
+        <record id="rule_location_hours_read_all" model="ir.rule">
+            <field name="name">Location Hours: Read All</field>
+            <field name="model_id" ref="model_attendance_location_hours"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+            <field name="groups" eval="[(4, ref('group_attendance_user'))]"/>
+        </record>
+
+        <record id="rule_location_hours_write_manager" model="ir.rule">
+            <field name="name">Location Hours: Manager Write</field>
+            <field name="model_id" ref="model_attendance_location_hours"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="perm_read" eval="False"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+            <field name="groups" eval="[(4, ref('group_attendance_manager'))]"/>
+        </record>
+
+        <!-- Record Rules for Devices -->
+        <record id="rule_device_read_all" model="ir.rule">
+            <field name="name">Device: Read All</field>
+            <field name="model_id" ref="model_attendance_device"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+            <field name="groups" eval="[(4, ref('group_attendance_user'))]"/>
+        </record>
+
+        <record id="rule_device_write_manager" model="ir.rule">
+            <field name="name">Device: Manager Write</field>
+            <field name="model_id" ref="model_attendance_device"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="perm_read" eval="False"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+            <field name="groups" eval="[(4, ref('group_attendance_manager'))]"/>
+        </record>
+
+    </data>
+</odoo>

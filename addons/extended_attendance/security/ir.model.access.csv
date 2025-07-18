@@ -1,0 +1,8 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_person_type_all,person.type all,model_person_type,,1,1,1,1
+access_location_all,attendance.location all,model_attendance_location,,1,1,1,1
+access_location_hours_all,attendance.location.hours all,model_attendance_location_hours,,1,1,1,1
+access_device_all,attendance.device all,model_attendance_device,,1,1,1,1
+access_extended_person_all,extended.attendance.person all,model_extended_attendance_person,,1,1,1,1
+access_extended_attendance_all,extended.attendance.record all,model_extended_attendance_record,,1,1,1,1
+access_custom_field_all,extended.attendance.custom.field all,model_extended_attendance_custom_field,,1,1,1,1

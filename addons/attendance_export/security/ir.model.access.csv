@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_hr_attendance_export_user,hr.attendance.export.user,model_hr_attendance_export,hr.group_hr_user,1,1,1,1
+access_hr_attendance_export_manager,hr.attendance.export.manager,model_hr_attendance_export,hr.group_hr_manager,1,1,1,1
+access_attendance_export_wizard_user,attendance.export.wizard.user,model_attendance_export_wizard,hr.group_hr_user,1,1,1,1
+access_attendance_export_wizard_manager,attendance.export.wizard.manager,model_attendance_export_wizard,hr.group_hr_manager,1,1,1,1

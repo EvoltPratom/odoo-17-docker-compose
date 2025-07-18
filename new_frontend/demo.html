@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Odoo Attendance Dashboard - Demo</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="styles.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-clock"></i> Odoo Attendance Dashboard (Demo)</h1>
+            <div class="connection-status">
+                <span class="status-indicator connected"></span>
+                <span class="status-text">Demo Mode</span>
+            </div>
+        </header>
+
+        <!-- Main Dashboard -->
+        <main>
+            <!-- Quick Stats -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-users"></i></div>
+                    <div class="stat-content">
+                        <div class="stat-value">4</div>
+                        <div class="stat-label">Total Employees</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-user-check"></i></div>
+                    <div class="stat-content">
+                        <div class="stat-value">2</div>
+                        <div class="stat-label">Present Today</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-clock"></i></div>
+                    <div class="stat-content">
+                        <div class="stat-value">11.0h</div>
+                        <div class="stat-label">Hours Today</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-calendar-day"></i></div>
+                    <div class="stat-content">
+                        <div class="stat-value">4</div>
+                        <div class="stat-label">Records Today</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="actions">
+                <button class="btn btn-primary" onclick="showToast('Demo mode - data refreshed!', 'success')">
+                    <i class="fas fa-sync-alt"></i> Refresh
+                </button>
+                <button class="btn btn-success" onclick="showToast('Demo mode - employee creation disabled', 'info')">
+                    <i class="fas fa-user-plus"></i> Add Employee
+                </button>
+                <button class="btn btn-info" onclick="showToast('Demo mode - attendance recording disabled', 'info')">
+                    <i class="fas fa-clock"></i> Record Attendance
+                </button>
+                <button class="btn btn-warning" onclick="showToast('Demo mode - export feature disabled', 'info')">
+                    <i class="fas fa-download"></i> Export Data
+                </button>
+            </div>
+
+            <!-- Main Content Grid -->
+            <div class="dashboard-grid">
+                <!-- Employees Section -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2><i class="fas fa-users"></i> Employees</h2>
+                        <div class="card-actions">
+                            <input type="text" placeholder="Search employees..." onkeyup="filterDemoEmployees(this.value)">
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <div class="employee-list" id="employeeList">
+                            <div class="employee-item">
+                                <div class="employee-avatar">A</div>
+                                <div class="employee-info">
+                                    <div class="employee-name">Alice Johnson</div>
+                                    <div class="employee-details">DEMO001 • alice@demo.com • Sales</div>
+                                </div>
+                                <div class="employee-status status-absent">Left</div>
+                            </div>
+                            <div class="employee-item">
+                                <div class="employee-avatar">B</div>
+                                <div class="employee-info">
+                                    <div class="employee-name">Bob Smith</div>
+                                    <div class="employee-details">DEMO002 • bob@demo.com • Engineering</div>
+                                </div>
+                                <div class="employee-status status-present">Present</div>
+                            </div>
+                            <div class="employee-item">
+                                <div class="employee-avatar">C</div>
+                                <div class="employee-info">
+                                    <div class="employee-name">Carol Davis</div>
+                                    <div class="employee-details">DEMO003 • carol@demo.com • HR</div>
+                                </div>
+                                <div class="employee-status status-absent">Left</div>
+                            </div>
+                            <div class="employee-item">
+                                <div class="employee-avatar">D</div>
+                                <div class="employee-info">
+                                    <div class="employee-name">David Wilson</div>
+                                    <div class="employee-details">DEMO004 • david@demo.com • Engineering</div>
+                                </div>
+                                <div class="employee-status status-present">Present</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Attendance Section -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2><i class="fas fa-history"></i> Recent Attendance</h2>
+                        <div class="card-actions">
+                            <select>
+                                <option value="today">Today</option>
+                                <option value="week">This Week</option>
+                                <option value="month">This Month</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <div class="attendance-list">
+                            <div class="attendance-item">
+                                <div class="attendance-time">17:00</div>
+                                <div class="attendance-employee">Alice Johnson</div>
+                                <div class="attendance-action action-checkout">Check Out</div>
+                            </div>
+                            <div class="attendance-item">
+                                <div class="attendance-time">16:30</div>
+                                <div class="attendance-employee">Carol Davis</div>
+                                <div class="attendance-action action-checkout">Check Out</div>
+                            </div>
+                            <div class="attendance-item">
+                                <div class="attendance-time">08:45</div>
+                                <div class="attendance-employee">David Wilson</div>
+                                <div class="attendance-action action-checkin">Check In</div>
+                            </div>
+                            <div class="attendance-item">
+                                <div class="attendance-time">08:15</div>
+                                <div class="attendance-employee">Bob Smith</div>
+                                <div class="attendance-action action-checkin">Check In</div>
+                            </div>
+                            <div class="attendance-item">
+                                <div class="attendance-time">08:00</div>
+                                <div class="attendance-employee">Alice Johnson</div>
+                                <div class="attendance-action action-checkin">Check In</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Toast Notifications -->
+        <div id="toast" class="toast"></div>
+    </div>
+
+    <script>
+        function showToast(message, type = 'info') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = `toast ${type} show`;
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        function filterDemoEmployees(searchTerm) {
+            const employees = document.querySelectorAll('.employee-item');
+            employees.forEach(emp => {
+                const text = emp.textContent.toLowerCase();
+                if (text.includes(searchTerm.toLowerCase())) {
+                    emp.style.display = 'flex';
+                } else {
+                    emp.style.display = 'none';
+                }
+            });
+        }
+
+        // Show welcome message
+        setTimeout(() => {
+            showToast('Welcome to the demo! This shows how the UI looks with sample data.', 'info');
+        }, 1000);
+    </script>
+</body>
+</html>

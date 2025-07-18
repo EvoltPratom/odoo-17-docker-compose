@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        
+        <!-- Person Tree View -->
+        <record id="view_person_tree" model="ir.ui.view">
+            <field name="name">extended.attendance.person.tree</field>
+            <field name="model">extended.attendance.person</field>
+            <field name="arch" type="xml">
+                <tree string="Persons" decoration-muted="not active" decoration-success="is_checked_in">
+                    <field name="image_small" widget="image" class="oe_avatar"/>
+                    <field name="name"/>
+                    <field name="person_id"/>
+                    <field name="person_type_id"/>
+                    <field name="email"/>
+                    <field name="phone"/>
+                    <field name="is_checked_in"/>
+                    <field name="current_location_id"/>
+                    <field name="last_attendance"/>
+                    <field name="active"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Person Form View -->
+        <record id="view_person_form" model="ir.ui.view">
+            <field name="name">extended.attendance.person.form</field>
+            <field name="model">extended.attendance.person</field>
+            <field name="arch" type="xml">
+                <form string="Person">
+                    <header>
+                        <button name="action_check_in" type="object" string="Check In" class="oe_highlight"
+                                invisible="is_checked_in"/>
+                        <button name="action_check_out" type="object" string="Check Out" class="oe_highlight"
+                                invisible="not is_checked_in"/>
+                        <field name="active" widget="boolean_toggle"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <button name="action_view_attendance" type="object" class="oe_stat_button" icon="fa-clock-o">
+                                <field name="attendance_count" widget="statinfo" string="Attendances"/>
+                            </button>
+                        </div>
+                        
+                        <field name="image" widget="image" class="oe_avatar" options="{'preview_image': 'image_medium', 'size': [90, 90]}"/>
+                        
+                        <div class="oe_title">
+                            <h1>
+                                <field name="name" placeholder="Full Name"/>
+                            </h1>
+                            <h3>
+                                <field name="person_type_id" placeholder="Person Type"/>
+                            </h3>
+                        </div>
+                        
+                        <group>
+                            <group>
+                                <field name="person_id"/>
+                                <field name="first_name"/>
+                                <field name="last_name"/>
+                                <field name="email" widget="email"/>
+                                <field name="phone" widget="phone"/>
+                                <field name="mobile" widget="phone"/>
+                            </group>
+                            <group>
+                                <field name="start_date"/>
+                                <field name="end_date"/>
+                                <field name="access_level"/>
+                                <field name="requires_approval"/>
+                                <field name="employee_id"/>
+                            </group>
+                        </group>
+                        
+                        <group string="Current Status" invisible="not is_checked_in">
+                            <group>
+                                <field name="is_checked_in"/>
+                                <field name="current_location_id"/>
+                                <field name="last_attendance"/>
+                            </group>
+                        </group>
+                        
+                        <group string="Identification">
+                            <group>
+                                <field name="barcode"/>
+                                <field name="rfid_tag"/>
+                                <field name="qr_code"/>
+                            </group>
+                        </group>
+                        
+                        <group string="Address">
+                            <group>
+                                <field name="street" placeholder="Street..."/>
+                                <field name="street2"/>
+                                <field name="city"/>
+                                <field name="state_id" options="{'no_open': True, 'no_create': True}"/>
+                                <field name="zip"/>
+                                <field name="country_id" options="{'no_open': True, 'no_create': True}"/>
+                            </group>
+                        </group>
+                        
+                        <notebook>
+                            <page string="Access Control">
+                                <group>
+                                    <field name="allowed_location_ids" widget="many2many_tags"/>
+                                </group>
+                            </page>
+                            <page string="Custom Fields">
+                                <group>
+                                    <field name="custom_fields_json" widget="ace" options="{'mode': 'json'}"
+                                           readonly="not id"/>
+                                </group>
+                            </page>
+                        </notebook>
+                    </sheet>
+
+                </form>
+            </field>
+        </record>
+
+        <!-- Person Kanban View -->
+        <record id="view_person_kanban" model="ir.ui.view">
+            <field name="name">extended.attendance.person.kanban</field>
+            <field name="model">extended.attendance.person</field>
+            <field name="arch" type="xml">
+                <kanban>
+                    <field name="id"/>
+                    <field name="name"/>
+                    <field name="person_id"/>
+                    <field name="person_type_id"/>
+                    <field name="email"/>
+                    <field name="phone"/>
+                    <field name="is_checked_in"/>
+                    <field name="current_location_id"/>
+                    <field name="image_medium"/>
+                    <templates>
+                        <t t-name="kanban-box">
+                            <div class="oe_kanban_card oe_kanban_global_click">
+                                <div class="o_kanban_image">
+                                    <img t-att-src="kanban_image('extended.attendance.person', 'image_medium', record.id.raw_value)" alt="Person"/>
+                                </div>
+                                <div class="oe_kanban_details">
+                                    <strong class="o_kanban_record_title">
+                                        <field name="name"/>
+                                    </strong>
+                                    <div class="o_kanban_record_subtitle">
+                                        <field name="person_type_id"/>
+                                    </div>
+                                    <div class="o_kanban_record_subtitle">
+                                        ID: <field name="person_id"/>
+                                    </div>
+                                    <div t-if="record.is_checked_in.raw_value" class="o_kanban_record_subtitle text-success">
+                                        ✓ Checked in at <field name="current_location_id"/>
+                                    </div>
+                                    <div t-if="!record.is_checked_in.raw_value" class="o_kanban_record_subtitle text-muted">
+                                        Not checked in
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+
+        <!-- Person Search View -->
+        <record id="view_person_search" model="ir.ui.view">
+            <field name="name">extended.attendance.person.search</field>
+            <field name="model">extended.attendance.person</field>
+            <field name="arch" type="xml">
+                <search string="Persons">
+                    <field name="name"/>
+                    <field name="person_id"/>
+                    <field name="email"/>
+                    <field name="phone"/>
+                    <field name="person_type_id"/>
+                    <field name="barcode"/>
+                    <field name="rfid_tag"/>
+                    <filter string="Active" name="active" domain="[('active', '=', True)]"/>
+                    <filter string="Inactive" name="inactive" domain="[('active', '=', False)]"/>
+                    <filter string="Requires Approval" name="requires_approval" domain="[('requires_approval', '=', True)]"/>
+                    <group expand="0" string="Group By">
+                        <filter string="Person Type" name="group_person_type" context="{'group_by': 'person_type_id'}"/>
+                        <filter string="Access Level" name="group_access_level" context="{'group_by': 'access_level'}"/>
+                        <filter string="Current Location" name="group_location" context="{'group_by': 'current_location_id'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <!-- Person Action -->
+        <record id="action_person" model="ir.actions.act_window">
+            <field name="name">Persons</field>
+            <field name="res_model">extended.attendance.person</field>
+            <field name="view_mode">kanban,tree,form</field>
+            <field name="context">{'search_default_active': 1}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create your first person!
+                </p>
+                <p>
+                    Persons represent all individuals who can use the attendance system.
+                    This includes employees, students, guests, and any other person types you define.
+                </p>
+            </field>
+        </record>
+
+    </data>
+</odoo>
